@@ -1,8 +1,9 @@
 package com.example.chessvault.game.entity;
 
-import com.chessvault.shared.auditing.AuditableEntity;
-import com.chessvault.shared.exception.BusinessException;
-import com.chessvault.user.domain.User;
+import com.example.chessvault.game.domain.PgnContent;
+import com.example.chessvault.shared.entity.AuditableEntity;
+import com.example.chessvault.shared.exception.BusinessException;
+import com.example.chessvault.user.entity.User;
 import com.example.chessvault.game.domain.GameResult;
 import com.example.chessvault.game.domain.GameTag;
 import jakarta.persistence.*;
@@ -75,7 +76,7 @@ public class Game extends AuditableEntity {
         return Game.builder()
                 .user(user)
                 .title(title.trim())
-                .pgn(com.chessvault.game.domain.PgnContent.empty())
+                .pgn(com.example.chessvault.game.domain.PgnContent.empty())
                 .tags(new HashSet<>())
                 .build();
     }

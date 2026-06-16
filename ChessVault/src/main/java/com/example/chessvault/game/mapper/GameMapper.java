@@ -1,5 +1,6 @@
 package com.example.chessvault.game.mapper;
 
+import com.example.chessvault.game.domain.PgnContent;
 import com.example.chessvault.game.response.GameResponse;
 import com.example.chessvault.game.entity.Game;
 import com.example.chessvault.game.domain.GameResult;

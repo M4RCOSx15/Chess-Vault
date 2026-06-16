@@ -1,8 +1,8 @@
 package com.example.chessvault.dashboard.service;
 
 import com.example.chessvault.game.repository.GameRepository;
-import com.chessvault.shared.exception.ResourceNotFoundException;
-import com.chessvault.user.infrastructure.UserRepository;
+import com.example.chessvault.shared.exception.ResourceNotFoundException;
+import com.example.chessvault.user.repository.UserRepository;
 import com.example.chessvault.dashboard.response.DashboardResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;

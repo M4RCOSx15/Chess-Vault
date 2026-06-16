@@ -1,5 +1,6 @@
 package com.example.chessvault.auth.entity;
 
+import com.example.chessvault.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 

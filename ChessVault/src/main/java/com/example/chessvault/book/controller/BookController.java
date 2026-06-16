@@ -2,7 +2,7 @@ package com.example.chessvault.book.controller;
 
 import com.example.chessvault.book.response.BookResponse;
 import com.example.chessvault.book.service.BookService;
-import com.chessvault.shared.pagination.PageResponse;
+import com.example.chessvault.shared.response.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

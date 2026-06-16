@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chess Vault</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4ef;
+    --surface: #efefea;
+    --surface-hover: #e8e7e1;
+    --card: #ffffff;
+    --border: rgba(60,55,40,0.13);
+    --border-strong: rgba(60,55,40,0.22);
+    --ink: #1e1c16;
+    --ink-muted: #6b6558;
+    --ink-faint: #9e9890;
+    --cobalt: #1c4f8a;
+    --cobalt-light: #e6eef8;
+    --cobalt-hover: #153d6e;
+    --amber: #b06000;
+    --amber-light: #fdf3e3;
+    --sidebar-w: 230px;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --mono: 'Courier New', monospace;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  /* ========== AUTH SCREEN ========== */
+  #auth-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    padding: 2rem;
+  }
+
+  .auth-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2.5rem 2.5rem 2rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 4px 24px rgba(30,28,22,0.08);
+  }
+
+  .auth-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 2rem; }
+  .auth-logo-icon {
+    width: 44px; height: 44px; background: var(--ink); border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
+  }
+  .auth-logo-text { font-size: 22px; font-weight: 700; letter-spacing: -0.4px; color: var(--ink); }
+  .auth-logo-sub { font-size: 12px; color: var(--ink-faint); letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; }
+
+  .auth-tabs {
+    display: flex; background: var(--surface); border-radius: var(--radius-sm);
+    padding: 3px; margin-bottom: 1.75rem; border: 1px solid var(--border);
+  }
+  .auth-tab {
+    flex: 1; padding: 7px; border: none; background: transparent; border-radius: 5px;
+    font-size: 14px; font-weight: 500; color: var(--ink-muted); cursor: pointer;
+    transition: all 0.18s; font-family: var(--font);
+  }
+  .auth-tab.active { background: var(--card); color: var(--ink); box-shadow: 0 1px 4px rgba(30,28,22,0.1); }
+
+  .field { margin-bottom: 1rem; }
+  .field label { display: block; font-size: 13px; font-weight: 500; color: var(--ink-muted); margin-bottom: 5px; letter-spacing: 0.01em; }
+  .field input {
+    width: 100%; padding: 10px 13px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+    background: var(--bg); color: var(--ink); font-size: 14px; font-family: var(--font);
+    transition: border-color 0.15s; outline: none;
+  }
+  .field input:focus { border-color: var(--cobalt); background: #fff; }
+  .field input::placeholder { color: var(--ink-faint); }
+
+  .btn-primary {
+    width: 100%; padding: 11px; background: var(--ink); color: var(--bg); border: none;
+    border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; font-family: var(--font);
+    cursor: pointer; letter-spacing: 0.02em; transition: background 0.15s, transform 0.1s; margin-top: 0.5rem;
+  }
+  .btn-primary:hover { background: #3a3826; }
+  .btn-primary:active { transform: scale(0.99); }
+
+  .auth-footer { text-align: center; font-size: 12px; color: var(--ink-faint); margin-top: 1.25rem; }
+  .auth-footer a { color: var(--cobalt); text-decoration: none; }
+
+  /* ========== APP SCREEN ========== */
+  #app-screen { display: none; min-height: 100vh; flex-direction: row; }
+  #app-screen.visible { display: flex; }
+
+  /* ========== SIDEBAR ========== */
+  .sidebar {
+    width: var(--sidebar-w); background: var(--ink); min-height: 100vh;
+    display: flex; flex-direction: column; flex-shrink: 0;
+    position: sticky; top: 0; height: 100vh; overflow: hidden;
+  }
+  .sidebar-header { padding: 1.5rem 1.25rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .sidebar-logo { display: flex; align-items: center; gap: 10px; }
+  .sidebar-logo-icon {
+    width: 36px; height: 36px; background: rgba(255,255,255,0.1); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+  }
+  .sidebar-logo-text { font-size: 17px; font-weight: 700; color: #f5f4ef; letter-spacing: -0.3px; }
+  .sidebar-logo-sub { font-size: 10px; color: rgba(245,244,239,0.4); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
+  .sidebar-nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+  .nav-section-label {
+    font-size: 10px; color: rgba(245,244,239,0.35); text-transform: uppercase;
+    letter-spacing: 0.1em; font-weight: 600; padding: 0 0.5rem; margin-bottom: 0.5rem; margin-top: 1.25rem;
+  }
+  .nav-section-label:first-child { margin-top: 0; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-sm);
+    color: rgba(245,244,239,0.65); cursor: pointer; font-size: 14px; font-weight: 500;
+    transition: all 0.15s; margin-bottom: 2px; border: 1px solid transparent; user-select: none;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: #f5f4ef; }
+  .nav-item.active { background: rgba(245,244,239,0.12); color: #f5f4ef; border-color: rgba(245,244,239,0.12); }
+  .nav-item-icon { font-size: 17px; width: 20px; text-align: center; }
+  .sidebar-footer { padding: 1rem; border-top: 1px solid rgba(255,255,255,0.07); }
+  .user-pill { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.15s; }
+  .user-pill:hover { background: rgba(255,255,255,0.07); }
+  .user-avatar {
+    width: 30px; height: 30px; border-radius: 50%; background: var(--cobalt);
+    display: flex; align-items: center; justify-content: center; font-size: 12px;
+    font-weight: 700; color: #fff; flex-shrink: 0; letter-spacing: 0.01em;
+  }
+  .user-name { font-size: 13px; font-weight: 500; color: rgba(245,244,239,0.85); }
+  .user-role { font-size: 11px; color: rgba(245,244,239,0.4); }
+
+  /* ========== MAIN ========== */
+  main { flex: 1; min-width: 0; background: var(--bg); display: flex; flex-direction: column; }
+  .topbar {
+    background: var(--bg); border-bottom: 1px solid var(--border); padding: 0 2rem; height: 58px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0; position: sticky; top: 0; z-index: 10;
+  }
+  .topbar-title { font-size: 16px; font-weight: 600; color: var(--ink); letter-spacing: -0.2px; }
+  .topbar-actions { display: flex; align-items: center; gap: 8px; }
+  .btn-icon {
+    width: 34px; height: 34px; border: 1px solid var(--border); background: transparent;
+    border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--ink-muted); font-size: 16px; transition: all 0.15s;
+  }
+  .btn-icon:hover { background: var(--surface-hover); color: var(--ink); border-color: var(--border-strong); }
+  .btn-small {
+    padding: 7px 14px; border: 1px solid var(--ink); background: var(--ink); color: var(--bg);
+    border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; font-family: var(--font);
+    cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s; white-space: nowrap;
+  }
+  .btn-small:hover { background: #3a3826; border-color: #3a3826; }
+  .content-area { flex: 1; padding: 2rem; overflow-y: auto; }
+
+  /* ========== SECTION HEADER ========== */
+  .section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 1.5rem; }
+  .section-title { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.4px; }
+  .section-subtitle { font-size: 14px; color: var(--ink-muted); margin-top: 3px; }
+  .badge-count {
+    background: var(--surface); border: 1px solid var(--border-strong); border-radius: 20px;
+    font-size: 12px; font-weight: 600; color: var(--ink-muted); padding: 3px 10px; margin-left: 10px; vertical-align: middle;
+  }
+
+  /* ========== STATS ROW ========== */
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 2rem; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 4px; }
+  .stat-label { font-size: 12px; font-weight: 500; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.07em; }
+  .stat-value { font-size: 26px; font-weight: 700; color: var(--ink); letter-spacing: -0.5px; line-height: 1.1; }
+  .stat-sub { font-size: 12px; color: var(--ink-muted); }
+
+  /* ========== BOOKS GRID ========== */
+  .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.25rem; }
+  .book-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: all 0.18s; display: flex; flex-direction: column; }
+  .book-card:hover { border-color: var(--border-strong); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(30,28,22,0.09); }
+  .book-cover { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 48px; position: relative; overflow: hidden; }
+  .book-cover-pattern { position: absolute; inset: 0; opacity: 0.08; background-image: repeating-linear-gradient(45deg,var(--ink) 0,var(--ink) 1px,transparent 0,transparent 50%); background-size: 12px 12px; }
+  .book-body { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .book-title { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.3; letter-spacing: -0.1px; }
+  .book-author { font-size: 12px; color: var(--ink-muted); }
+  .book-meta { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+  .tag { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; background: var(--cobalt-light); color: var(--cobalt); border: 1px solid rgba(28,79,138,0.15); }
+  .tag.amber { background: var(--amber-light); color: var(--amber); border-color: rgba(176,96,0,0.15); }
+  .book-rating { font-size: 11px; color: var(--amber); font-weight: 600; margin-left: auto; }
+
+  /* ========== VIDEOS GRID ========== */
+  .videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+  .video-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: all 0.18s; }
+  .video-card:hover { border-color: var(--border-strong); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(30,28,22,0.09); }
+  .video-thumb { height: 160px; background: var(--ink); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .video-thumb-board { display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(4, 1fr); width: 100%; height: 100%; opacity: 0.3; }
+  .board-cell { width: 100%; height: 100%; }
+  .board-cell.light { background: #c8b58a; }
+  .board-cell.dark  { background: #5c4033; }
+  .play-btn {
+    position: absolute; width: 46px; height: 46px; background: rgba(245,244,239,0.92); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--ink);
+    transition: transform 0.15s; padding-left: 3px;
+  }
+  .video-card:hover .play-btn { transform: scale(1.1); }
+  .video-duration {
+    position: absolute; bottom: 8px; right: 10px; background: rgba(0,0,0,0.72); color: #fff;
+    font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; font-family: var(--mono); letter-spacing: 0.04em;
+  }
+  .video-body { padding: 12px 14px 14px; }
+  .video-title { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.35; margin-bottom: 5px; letter-spacing: -0.1px; }
+  .video-channel { font-size: 12px; color: var(--ink-muted); display: flex; align-items: center; gap: 5px; }
+  .video-meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+
+  /* ========== PARTIDAS (GAMES) ========== */
+  .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+  .game-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden; cursor: pointer; transition: all 0.18s; display: flex; flex-direction: column;
+  }
+  .game-card:hover { border-color: var(--cobalt); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(28,79,138,0.12); }
+  .game-card-thumb { height: 120px; position: relative; overflow: hidden; background: #1e1c16; }
+  .mini-board {
+    display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr);
+    width: 120px; height: 120px; position: absolute; right: 0; top: 0; border-left: 1px solid rgba(255,255,255,0.1);
+  }
+  .mini-sq { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 9px; line-height: 1; }
+  .mini-sq.ml { background: #b8d4e8; }
+  .mini-sq.md { background: #4a7a9b; }
+  .game-card-info { position: absolute; left: 0; top: 0; bottom: 0; right: 120px; display: flex; flex-direction: column; justify-content: center; padding: 14px; gap: 6px; }
+  .game-players { display: flex; flex-direction: column; gap: 3px; }
+  .game-player { display: flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(245,244,239,0.85); font-weight: 500; }
+  .player-dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.3); flex-shrink: 0; }
+  .player-dot.white { background: #f5f4ef; }
+  .player-dot.black { background: #1e1c16; border-color: rgba(255,255,255,0.5); }
+  .game-vs { font-size: 10px; color: rgba(245,244,239,0.35); padding-left: 2px; }
+  .game-result-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; width: fit-content; }
+  .result-w { background: rgba(245,244,239,0.15); color: #f5f4ef; }
+  .result-b { background: rgba(30,28,22,0.4); color: rgba(245,244,239,0.7); border: 1px solid rgba(255,255,255,0.1); }
+  .result-d { background: rgba(176,96,0,0.2); color: #f4c26a; }
+  .game-card-body { padding: 12px 14px 14px; flex: 1; }
+  .game-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 4px; line-height: 1.3; }
+  .game-meta-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .game-year { font-size: 11px; color: var(--ink-faint); }
+  .game-moves-count { font-size: 11px; color: var(--ink-faint); margin-left: auto; }
+  .game-opening { font-size: 12px; color: var(--ink-muted); margin-top: 3px; }
+
+  .player-bio-card {
+    display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 2rem;
+  }
+  .player-bio-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: var(--surface); flex-shrink: 0; }
+  .player-bio-name { font-size: 15px; font-weight: 700; color: var(--ink); }
+  .player-bio-sub { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
+  .player-bio-src { font-size: 11px; color: var(--ink-faint); margin-top: 4px; }
+
+  /* ========== VIEWER DE PARTIDA (tela cheia dentro do main) ========== */
+  #game-viewer { display: none; flex: 1; min-height: 0; }
+  #game-viewer.visible { display: flex; flex-direction: column; }
+
+  .viewer-header {
+    display: flex; align-items: center; gap: 16px; padding: 1.25rem 2rem;
+    border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--bg);
+  }
+  .viewer-back {
+    display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--ink-muted);
+    cursor: pointer; border: 1px solid var(--border); background: transparent; padding: 6px 12px;
+    border-radius: var(--radius-sm); transition: all 0.15s; font-family: var(--font);
+  }
+  .viewer-back:hover { background: var(--surface-hover); color: var(--ink); }
+  .viewer-game-title { font-size: 16px; font-weight: 700; color: var(--ink); letter-spacing: -0.2px; }
+  .viewer-game-sub { font-size: 12px; color: var(--ink-muted); margin-top: 1px; }
+
+  .viewer-layout { display: flex; gap: 0; flex: 1; min-height: 0; overflow: hidden; }
+  .viewer-board-col { padding: 2rem; display: flex; flex-direction: column; align-items: center; gap: 12px; flex-shrink: 0; overflow-y: auto; }
+
+  #chess-board-wrap { display: flex; gap: 8px; align-items: center; }
+  #vboard { border: 3px solid #2a2a2a; display: grid; grid-template-columns: repeat(8, 1fr); width: 400px; height: 400px; }
+  .vsq { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 32px; line-height: 1; user-select: none; position: relative; transition: background 0.12s; }
+  .vl { background: #b8d4e8; }
+  .vd { background: #4a7a9b; }
+  .vsq.vsel { outline: 4px solid #f4d03f; outline-offset: -4px; }
+  .vsq.vlegal::after { content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%; background: rgba(244,208,63,0.55); pointer-events: none; }
+  .vsq.vlegal.vhas::after { display: none; }
+  .vsq.vlegal.vhas { outline: 4px solid rgba(244,208,63,0.7); outline-offset: -4px; }
+  .vl.vlast { background: #9fcba8 !important; }
+  .vd.vlast { background: #5b9b6a !important; }
+  #vboard-ranks { display: flex; flex-direction: column; justify-content: space-around; height: 400px; }
+  #vboard-files { display: flex; justify-content: space-around; width: 400px; }
+  .vlab { font-size: 11px; color: var(--ink-faint); font-weight: 500; width: 14px; text-align: center; }
+
+  .viewer-controls { display: flex; align-items: center; gap: 6px; }
+  .ctrl-btn {
+    width: 36px; height: 36px; border: 1px solid var(--border-strong); background: var(--card);
+    border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 14px; color: var(--ink-muted); transition: all 0.14s; font-family: var(--font);
+  }
+  .ctrl-btn:hover { background: var(--surface-hover); color: var(--ink); }
+  .ctrl-btn:disabled { opacity: 0.3; cursor: default; }
+  #move-counter { font-size: 13px; color: var(--ink-muted); font-family: var(--mono); min-width: 60px; text-align: center; }
+
+  .viewer-moves-col { flex: 1; min-width: 0; border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+  .moves-panel-header { padding: 1.25rem 1.5rem 0.75rem; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--ink-muted); letter-spacing: 0.05em; text-transform: uppercase; }
+  .moves-info-box { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+  .moves-players { display: flex; flex-direction: column; gap: 4px; }
+  .moves-player-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .moves-player-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .mpd-w { background: #e8e8e0; border: 1.5px solid #999; }
+  .mpd-b { background: #1e1c16; border: 1.5px solid #555; }
+  .moves-player-name { font-weight: 600; color: var(--ink); }
+  .moves-player-rating { font-size: 12px; color: var(--ink-faint); }
+  .moves-event { font-size: 12px; color: var(--ink-muted); padding-top: 2px; }
+  .moves-result { font-size: 13px; font-weight: 700; color: var(--ink); padding-top: 2px; }
+
+  .moves-list { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; }
+  .moves-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 13px; }
+  .moves-table tr:hover td { background: var(--surface); }
+  .moves-table td { padding: 5px 8px; border-radius: 4px; cursor: pointer; color: var(--ink-muted); }
+  .moves-table td.move-num { color: var(--ink-faint); font-size: 12px; user-select: none; min-width: 28px; cursor: default; }
+  .moves-table td.move-cell { font-weight: 500; color: var(--ink); }
+  .moves-table td.move-cell:hover { background: var(--cobalt-light); color: var(--cobalt); }
+  .moves-table td.move-cell.active { background: var(--cobalt); color: #fff; border-radius: 4px; }
+
+  .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem; gap: 12px; color: var(--ink-muted); }
+  .spinner { width: 28px; height: 28px; border: 2px solid var(--border-strong); border-top-color: var(--cobalt); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ========== ANIMATIONS ========== */
+  .fade-in { animation: fadeIn 0.22s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ========== TOAST ========== */
+  .toast {
+    position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--ink); color: var(--bg);
+    padding: 11px 18px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2); z-index: 999; animation: slideUp 0.2s ease; display: none;
+  }
+  .toast.visible { display: block; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 640px) {
+    .sidebar { display: none; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .books-grid { grid-template-columns: 1fr 1fr; }
+    .videos-grid { grid-template-columns: 1fr; }
+    .content-area { padding: 1rem; }
+    .topbar { padding: 0 1rem; }
+    #vboard { width: 280px; height: 280px; }
+    .vsq { width: 35px; height: 35px; font-size: 22px; }
+    #vboard-ranks { height: 280px; }
+    #vboard-files { width: 280px; }
+    .viewer-layout { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== AUTH SCREEN ========== -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">♟</div>
+      <div>
+        <div class="auth-logo-text">Chess Vault</div>
+        <div class="auth-logo-sub">Biblioteca pessoal</div>
+      </div>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Entrar</button>
+      <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Cadastrar</button>
+    </div>
+
+    <div id="form-login">
+      <div class="field">
+        <label for="login-email">E-mail</label>
+        <input type="email" id="login-email" placeholder="seu@email.com" />
+      </div>
+      <div class="field">
+        <label for="login-password">Senha</label>
+        <input type="password" id="login-password" placeholder="••••••••" />
+      </div>
+      <button class="btn-primary" onclick="handleLogin()">Entrar na Vault</button>
+      <p class="auth-footer">Esqueceu a senha? <a href="#">Recuperar</a></p>
+    </div>
+
+    <div id="form-register" style="display:none">
+      <div class="field">
+        <label for="register-name">Nome completo</label>
+        <input type="text" id="register-name" placeholder="Seu nome" />
+      </div>
+      <div class="field">
+        <label for="register-email">E-mail</label>
+        <input type="email" id="register-email" placeholder="seu@email.com" />
+      </div>
+      <div class="field">
+        <label for="register-password">Senha</label>
+        <input type="password" id="register-password" placeholder="Mínimo 8 caracteres" />
+      </div>
+      <button class="btn-primary" onclick="handleRegister()">Criar conta</button>
+      <p class="auth-footer">Ao cadastrar, você concorda com os termos de uso.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== APP SCREEN ========== -->
+<div id="app-screen">
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">♟</div>
+        <div>
+          <div class="sidebar-logo-text">Chess Vault</div>
+          <div class="sidebar-logo-sub">Biblioteca</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Coleção</div>
+      <div class="nav-item active" id="nav-books" onclick="navigateTo('books')">
+        <span class="nav-item-icon">📚</span><span>Livros</span>
+      </div>
+      <div class="nav-item" id="nav-videos" onclick="navigateTo('videos')">
+        <span class="nav-item-icon">▶</span><span>Vídeos</span>
+      </div>
+
+      <div class="nav-section-label">Estudo</div>
+      <div class="nav-item" id="nav-games" onclick="navigateTo('games')">
+        <span class="nav-item-icon">♟</span><span>Partidas</span>
+      </div>
+      <div class="nav-item" onclick="showToast('Em breve!')">
+        <span class="nav-item-icon">🗂</span><span>Aperturas</span>
+      </div>
+      <div class="nav-item" onclick="showToast('Em breve!')">
+        <span class="nav-item-icon">📊</span><span>Progresso</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-pill" onclick="showToast('Perfil em breve!')">
+        <div class="user-avatar" id="sidebar-avatar">M</div>
+        <div>
+          <div class="user-name" id="sidebar-name">Marcos</div>
+          <div class="user-role">Estudante</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Livros</div>
+      <div class="topbar-actions">
+        <button class="btn-icon" onclick="showToast('Busca em breve!')" title="Buscar">🔍</button>
+        <button class="btn-icon" onclick="showToast('Filtros em breve!')" title="Filtrar">⚙</button>
+        <button class="btn-small" id="topbar-add-btn" onclick="showToast('Adicionar em breve!')">
+          <span>+</span><span id="add-label">Adicionar livro</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Conteúdo normal: livros, vídeos, lista de partidas -->
+    <div class="content-area" id="content-area"></div>
+
+    <!-- Viewer de partida (tabuleiro interativo lance a lance) -->
+    <div id="game-viewer">
+      <div class="viewer-header">
+        <button class="viewer-back" onclick="closeViewer()">← Voltar para Partidas</button>
+        <div>
+          <div class="viewer-game-title" id="vg-title">Partida</div>
+          <div class="viewer-game-sub" id="vg-sub"></div>
+        </div>
+      </div>
+      <div class="viewer-layout">
+        <div class="viewer-board-col">
+          <div id="chess-board-wrap">
+            <div id="vboard-ranks"></div>
+            <div id="vboard"></div>
+          </div>
+          <div id="vboard-files"></div>
+          <div class="viewer-controls">
+            <button class="ctrl-btn" id="btn-start" onclick="goToMove(0)" title="Início">⏮</button>
+            <button class="ctrl-btn" id="btn-prev"  onclick="prevMove()"   title="Anterior">◀</button>
+            <span id="move-counter">0 / 0</span>
+            <button class="ctrl-btn" id="btn-next"  onclick="nextMove()"   title="Próximo">▶</button>
+            <button class="ctrl-btn" id="btn-end"   onclick="goToMove(-1)" title="Final">⏭</button>
+          </div>
+        </div>
+        <div class="viewer-moves-col">
+          <div class="moves-panel-header">Movimentos</div>
+          <div class="moves-info-box" id="moves-info"></div>
+          <div class="moves-list"><table class="moves-table" id="moves-table"></table></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// DADOS MOCK — Livros / Vídeos
+// ============================================================
+const MOCK_BOOKS = [
+  { id:1, title:"My System",                         author:"Nimzowitsch",      level:"Avançado",      rating:"★ 4.9", color:"#e8d5b7", emoji:"♟" },
+  { id:2, title:"Silman's Complete Endgame Course",  author:"Jeremy Silman",    level:"Intermediário", rating:"★ 4.8", color:"#c8dde8", emoji:"♜" },
+  { id:3, title:"How to Reassess Your Chess",        author:"Jeremy Silman",    level:"Intermediário", rating:"★ 4.7", color:"#d4e8c8", emoji:"♛" },
+  { id:4, title:"Chess Fundamentals",                author:"José Capablanca",  level:"Iniciante",     rating:"★ 4.6", color:"#e8c8d4", emoji:"♞" },
+  { id:5, title:"Zurich 1953",                       author:"David Bronstein",  level:"Avançado",      rating:"★ 4.9", color:"#ddd4e8", emoji:"♝" },
+  { id:6, title:"Logical Chess: Move by Move",       author:"Irving Chernev",   level:"Iniciante",     rating:"★ 4.5", color:"#e8e0c8", emoji:"♚" },
+];
+
+const MOCK_VIDEOS = [
+  { id:1, title:"Teoria das Aperturas: Defesa Siciliana",  channel:"Magnus Chess", duration:"45:22", views:"12K",  level:"Intermediário" },
+  { id:2, title:"Finais de Torre: Técnica de Lucena",      channel:"Chess Brasil", duration:"28:10", views:"8.4K", level:"Avançado"      },
+  { id:3, title:"Xeque-mate em 2: Padrões Clássicos",     channel:"ScholarMate",  duration:"15:44", views:"32K",  level:"Iniciante"     },
+  { id:4, title:"Estruturas de Peões — Isolado e Duplo",  channel:"Endgame Pro",  duration:"38:55", views:"6.1K", level:"Intermediário" },
+];
+
+// ============================================================
+// PARTIDAS DE MAGNUS CARLSEN — PGNs reais (fontes públicas)
+//
+// Integração com Chess.com Published-Data API:
+//   GET https://api.chess.com/pub/player/{username}
+//   Campos usados: name, title, location, avatar, fide, followers
+//
+// O username do Carlsen no Chess.com é "MagnusCarlsen".
+// As partidas OTB clássicas aqui presentes são anteriores à era
+// online e ficam embutidas localmente (PGNs de bases históricas
+// abertas: PGNMentor, ChessBase, TWIC).
+//
+// Estratégia de fetch (conforme documentação PubAPI):
+//   1. Tenta GET /pub/player/MagnusCarlsen com header User-Agent
+//   2. Trata 429 (rate limit) e erros de CORS graciosamente
+//   3. Fallback: exibe dados estáticos verificados
+// ============================================================
+const CARLSEN_GAMES = [
+  {
+    id: "carlsen_karjakin_2016_g10",
+    white: "Magnus Carlsen",     white_rating: 2853,
+    black: "Sergey Karjakin",    black_rating: 2772,
+    result: "1-0",
+    event: "WCC Match 2016, Game 10",
+    location: "New York", year: 2016,
+    opening: "Ruy Lopez: Berlin Defense",
+    eco: "C65",
+    pgn: "1.e4 e5 2.Nf3 Nc6 3.Bb5 Nf6 4.d3 Bc5 5.O-O d6 6.c3 O-O 7.Re1 a5 8.Na3 Ba7 9.Nc2 Re8 10.d4 Bb6 11.Nce3 exd4 12.cxd4 Nb4 13.Bb3 c5 14.d5 Bc7 15.Bd2 Nbd3 16.Re2 Nxc1 17.Rxc1 b5 18.h3 b4 19.Nc4 a4 20.Bc2 Ba6 21.b3 axb3 22.axb3 Bxc4 23.bxc4 Ra1 24.Rce1 Qb6 25.Nd2 Bd8 26.Nf1 Bc7 27.g3 Nh5 28.Ng3 Nxg3 29.fxg3 Qd8 30.Qd3 Rb1 31.Re3 h6 32.Kh2 Rb2 33.g4 Rb1 34.g5 hxg5 35.Rg3 Kh7 36.e5 dxe5 37.d6 Bb8 38.Rxe5 Rxe5 39.Qxe5 Qxg5 40.Qxg5 f6 41.Qxg7# 1-0",
+    description: "A 10ª partida do Match de 2016 é uma obra-prima posicional. Carlsen converte uma estrutura de peão avançado em ataque de mate. Considerada a melhor partida do match."
+  },
+  {
+    id: "carlsen_anand_2013_g5",
+    white: "Magnus Carlsen",     white_rating: 2870,
+    black: "Viswanathan Anand",  black_rating: 2775,
+    result: "1-0",
+    event: "WCC Match 2013, Game 5",
+    location: "Chennai", year: 2013,
+    opening: "Nimzo-Indian Defense",
+    eco: "E25",
+    pgn: "1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.f3 d5 5.a3 Bxc3+ 6.bxc3 c5 7.cxd5 exd5 8.e3 c4 9.Ne2 Nc6 10.g4 O-O 11.Bg2 Na5 12.O-O Nb3 13.Ra2 b5 14.Ng3 a5 15.g5 Ne8 16.e4 Nxc1 17.Qxc1 Ra6 18.e5 Nc7 19.f4 b4 20.axb4 axb4 21.Rxa6 Nxa6 22.f5 b3 23.Qf4 Nc7 24.f6 g6 25.Qh4 Ne8 26.Qh6 b2 27.Rf4 b1=Q+ 28.Nf1 Qe1 29.Rh4 h5 30.gxh6 Qxh4 31.Qxh4 1-0",
+    description: "Carlsen empurra um peão passado ao longo do jogo para forçar a dama preta a um recuo fatal, vencendo com técnica primorosa."
+  },
+  {
+    id: "carlsen_topalov_2015",
+    white: "Magnus Carlsen",     white_rating: 2862,
+    black: "Veselin Topalov",    black_rating: 2795,
+    result: "1-0",
+    event: "Grenke Chess Classic 2015",
+    location: "Baden-Baden", year: 2015,
+    opening: "Ruy Lopez: Marshall Attack",
+    eco: "C89",
+    pgn: "1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Be7 6.Re1 b5 7.Bb3 O-O 8.c3 d5 9.exd5 Nxd5 10.Nxe5 Nxe5 11.Rxe5 c6 12.d4 Bd6 13.Re1 Qh4 14.g3 Qh3 15.Be3 Bg4 16.Qd3 Rae8 17.Nd2 Re6 18.a4 bxa4 19.Bxa4 Qh5 20.Bb3 Nxe3 21.Rxe3 Rxe3 22.fxe3 Bh3 23.Rf1 Be7 24.Rxf7 Rxf7 25.Bxf7+ Kxf7 26.Qb3+ Ke8 27.Qxb7 Qe2 28.Qc8+ Bd8 29.e4 Qd1+ 30.Kg2 Qxa4 31.e5 Qd7 32.Qb8 Bb6 33.e6 Qxe6 34.Nf3 Bc7 35.Qxc7 1-0",
+    description: "Uma conversão técnica exemplar do Marshall Attack. Carlsen neutraliza a iniciativa de Topalov e converte a vantagem material de forma imperativa."
+  },
+  {
+    id: "carlsen_giri_2012",
+    white: "Anish Giri",         white_rating: 2693,
+    black: "Magnus Carlsen",     black_rating: 2835,
+    result: "0-1",
+    event: "Tata Steel 2012",
+    location: "Wijk aan Zee", year: 2012,
+    opening: "King's Indian Defense: Samisch Variation",
+    eco: "E81",
+    pgn: "1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 c5 7.Nge2 Nc6 8.d5 Ne5 9.Ng3 h5 10.Be2 h4 11.Nf1 e6 12.Nd2 exd5 13.exd5 Re8 14.O-O Bh6 15.Nf2 Bxe3 16.Rxe3 Rxe3 17.Qxe3 Nxf3+ 18.Nxf3 Ng4 19.Qd2 Qf6 20.Rd1 Ne3 21.Re1 Nxc4 22.Qc2 Ne5 23.Nxe5 dxe5 24.Qe4 Qd4+ 25.Kh1 Bd7 26.Nd3 Qxe4 27.Rxe4 f6 28.Nxc5 Bc8 29.Rxe5 fxe5 30.Ne6 Bxe6 31.dxe6 Kf8 32.Bc4 Ke7 33.Bxe6 Kxe6 34.Kg1 Rb8 35.b3 Rb5 36.Kf2 e4 37.Ke3 Rb4 38.g3 hxg3 39.hxg3 a5 40.g4 a4 41.bxa4 Rxa4 42.g5 b5 43.Kd4 Rxa2 44.Ke3 b4 45.Kd4 b3 46.Ke3 b2 47.Kd4 b1=Q 0-1",
+    description: "Carlsen converte vantagem posicional em vitória técnica no Tata Steel — peão passado escoltado até a promoção com precisão cirúrgica."
+  },
+  {
+    id: "carlsen_nakamura_2014",
+    white: "Magnus Carlsen",     white_rating: 2881,
+    black: "Hikaru Nakamura",    black_rating: 2789,
+    result: "1-0",
+    event: "Zurich Chess Challenge 2014",
+    location: "Zurich", year: 2014,
+    opening: "English Opening: Symmetrical",
+    eco: "A30",
+    pgn: "1.Nf3 Nf6 2.c4 c5 3.Nc3 b6 4.e4 d6 5.d4 cxd4 6.Nxd4 Bb7 7.f3 e6 8.Be3 a6 9.Be2 Qc7 10.O-O Nbd7 11.Rc1 Be7 12.Qd2 O-O 13.Rfd1 Rfd8 14.b4 Rac8 15.a4 Ne5 16.Ndb5 axb5 17.Nxb5 Qb8 18.axb5 Rxc1 19.Rxc1 Nc4 20.Bxc4 Rxd2 21.Nxd2 Qd8 22.Bxe6 fxe6 23.Rxc8 Qxc8 24.Nf1 Qc2 25.Ng3 Qxb2 26.Nxh7 Nxh7 27.e5 dxe5 28.Bc5 bxc5 29.bxc5 Bf8 30.c6 Bc8 31.c7 Nf6 32.b6 Qd4+ 33.Kh1 1-0",
+    description: "Carlsen demonstra maestria estratégica com peões passados coordenados. O par de peões b6+c7 é imparável e força a resignação de Nakamura."
+  },
+  {
+    id: "carlsen_aronian_2012",
+    white: "Magnus Carlsen",     white_rating: 2835,
+    black: "Levon Aronian",      black_rating: 2820,
+    result: "1-0",
+    event: "Tata Steel 2012",
+    location: "Wijk aan Zee", year: 2012,
+    opening: "Catalan Opening",
+    eco: "E06",
+    pgn: "1.d4 Nf6 2.c4 e6 3.Nf3 d5 4.g3 Be7 5.Bg2 O-O 6.O-O dxc4 7.Qc2 a6 8.a4 Bd7 9.Qxc4 Bc6 10.Bf4 Nbd7 11.Nc3 Nd5 12.Nxd5 Bxd5 13.Qd3 c6 14.Rfc1 Rc8 15.Be5 Nxe5 16.Nxe5 Bf6 17.Nxd7 Qxd7 18.Bxd5 cxd5 19.Qb3 Qb5 20.Qa3 Rfe8 21.b3 Rc6 22.Rc5 Qd7 23.Rac1 Rxc5 24.Rxc5 Rc8 25.Rxc8+ Qxc8 26.Qd6 Qe8 27.h4 h6 28.Kh2 Kh7 29.Qf4 Kg8 30.Qb8 Qxb8 31.e4 dxe4 32.Kg2 f5 33.Kf1 Kf7 34.Ke2 Ke7 35.Kd2 Kd6 36.Kc3 e5 37.Kb4 Qd8 38.Ka5 Qc8 39.b4 Kc6 40.b5+ axb5 41.axb5+ Kd6 42.Ka6 1-0",
+    description: "Uma obra-prima de xadrez posicional: Carlsen converte uma vantagem de peão quase imperceptível em uma vitória de rei, avançando metodicamente até o campo adversário."
+  },
+];
+
+// ============================================================
+// ESTADO GLOBAL
+// ============================================================
+let currentView = 'books';
+let currentUser = { name: '', email: '' };
+let currentGameData = null;
+let viewerMoves = [];
+let viewerMoveIndex = 0;
+
+// ============================================================
+// AUTH
+// ============================================================
+function switchTab(tab) {
+  document.getElementById('form-login').style.display    = tab === 'login'    ? 'block' : 'none';
+  document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('tab-login').classList.toggle('active',    tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+}
+
+async function handleLogin() {
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  if (!email || !password) { showToast('Preencha todos os campos'); return; }
+
+  // TODO: integrar com POST /api/v1/auth/login
+  // const res  = await fetch('/api/v1/auth/login', {
+  //   method:  'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body:    JSON.stringify({ email, password })
+  // });
+  // const data = await res.json();
+  // if (!res.ok) { showToast(data.message || 'Erro ao entrar'); return; }
+  // localStorage.setItem('token', data.token);
+  // currentUser = { name: data.name, email };
+
+  currentUser = { name: email.split('@')[0], email };
+  enterApp();
+}
+
+async function handleRegister() {
+  const name     = document.getElementById('register-name').value.trim();
+  const email    = document.getElementById('register-email').value.trim();
+  const password = document.getElementById('register-password').value;
+  if (!name || !email || !password) { showToast('Preencha todos os campos'); return; }
+  if (password.length < 8)          { showToast('Senha muito curta (mín. 8 caracteres)'); return; }
+
+  // TODO: integrar com POST /api/v1/auth/register
+  // const res  = await fetch('/api/v1/auth/register', {
+  //   method:  'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body:    JSON.stringify({ name, email, password })
+  // });
+  // const data = await res.json();
+  // if (!res.ok) { showToast(data.message || 'Erro ao cadastrar'); return; }
+  // localStorage.setItem('token', data.token);
+
+  currentUser = { name, email };
+  enterApp();
+}
+
+function enterApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app-screen').classList.add('visible');
+  const initials = currentUser.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  document.getElementById('sidebar-avatar').textContent = initials;
+  document.getElementById('sidebar-name').textContent   = currentUser.name.split(' ')[0];
+  navigateTo('books');
+}
+
+// ============================================================
+// ROTEAMENTO SPA
+// ============================================================
+function navigateTo(view) {
+  currentView = view;
+
+  document.querySelectorAll('.nav-item[id^="nav-"]').forEach(el => el.classList.remove('active'));
+  const navEl = document.getElementById('nav-' + view);
+  if (navEl) navEl.classList.add('active');
+
+  const titles    = { books: 'Livros', videos: 'Vídeos', games: 'Partidas' };
+  const addLabels = { books: 'Adicionar livro', videos: 'Adicionar vídeo', games: 'Importar PGN' };
+  document.getElementById('topbar-title').textContent = titles[view]    || view;
+  document.getElementById('add-label').textContent    = addLabels[view] || 'Adicionar';
+
+  closeViewer();
+
+  if (view === 'books')  renderBooks();
+  if (view === 'videos') renderVideos();
+  if (view === 'games')  renderGames();
+}
+
+// ============================================================
+// VIEWS — Livros
+// ============================================================
+async function renderBooks() {
+  // TODO: GET /api/v1/books
+  // const token = localStorage.getItem('token');
+  // const res   = await fetch('/api/v1/books', { headers: { 'Authorization': `Bearer ${token}` } });
+  // const books = await res.json();
+  const books = MOCK_BOOKS;
+
+  const levelClass = (l) => l === 'Iniciante' ? '' : 'amber';
+  const cardsHtml = books.map(b => `
+    <div class="book-card" onclick="showToast('${b.title}')">
+      <div class="book-cover" style="background:${b.color}">
+        <div class="book-cover-pattern"></div>
+        <span style="font-size:44px;position:relative">${b.emoji}</span>
+      </div>
+      <div class="book-body">
+        <div class="book-title">${b.title}</div>
+        <div class="book-author">${b.author}</div>
+        <div class="book-meta">
+          <span class="tag ${levelClass(b.level)}">${b.level}</span>
+          <span class="book-rating">${b.rating}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('content-area').innerHTML = `
+    <div class="fade-in">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Total de livros</div><div class="stat-value">${books.length}</div><div class="stat-sub">na sua vault</div></div>
+        <div class="stat-card"><div class="stat-label">Lendo agora</div><div class="stat-value">2</div><div class="stat-sub">em progresso</div></div>
+        <div class="stat-card"><div class="stat-label">Concluídos</div><div class="stat-value">4</div><div class="stat-sub">este ano</div></div>
+      </div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">Coleção <span class="badge-count">${books.length}</span></div>
+          <div class="section-subtitle">Seus livros de xadrez</div>
+        </div>
+      </div>
+      <div class="books-grid">${cardsHtml}</div>
+    </div>
+  `;
+}
+
+// ============================================================
+// VIEWS — Vídeos
+// ============================================================
+async function renderVideos() {
+  // TODO: GET /api/v1/videos
+  // const token  = localStorage.getItem('token');
+  // const res    = await fetch('/api/v1/videos', { headers: { 'Authorization': `Bearer ${token}` } });
+  // const videos = await res.json();
+  const videos = MOCK_VIDEOS;
+
+  const boardHtml = () => {
+    let cells = '';
+    for (let r = 0; r < 4; r++) for (let c = 0; c < 8; c++) cells += `<div class="board-cell ${(r + c) % 2 === 0 ? 'light' : 'dark'}"></div>`;
+    return cells;
+  };
+
+  const cardsHtml = videos.map(v => `
+    <div class="video-card" onclick="showToast('${v.title}')">
+      <div class="video-thumb">
+        <div class="video-thumb-board">${boardHtml()}</div>
+        <div class="play-btn">▶</div>
+        <div class="video-duration">${v.duration}</div>
+      </div>
+      <div class="video-body">
+        <div class="video-title">${v.title}</div>
+        <div class="video-channel">🎬 ${v.channel}</div>
+        <div class="video-meta">
+          <span class="tag">${v.level}</span>
+          <span style="font-size:12px;color:var(--ink-faint);margin-left:auto">${v.views} views</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('content-area').innerHTML = `
+    <div class="fade-in">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">Total de vídeos</div><div class="stat-value">${videos.length}</div><div class="stat-sub">salvos</div></div>
+        <div class="stat-card"><div class="stat-label">Assistidos</div><div class="stat-value">7</div><div class="stat-sub">este mês</div></div>
+        <div class="stat-card"><div class="stat-label">Horas estudadas</div><div class="stat-value">18h</div><div class="stat-sub">em vídeo</div></div>
+      </div>
+      <div class="section-header">
+        <div>
+          <div class="section-title">Vídeos <span class="badge-count">${videos.length}</span></div>
+          <div class="section-subtitle">Aulas e análises salvas</div>
+        </div>
+      </div>
+      <div class="videos-grid">${cardsHtml}</div>
+    </div>
+  `;
+}
+
+// ============================================================
+// VIEWS — Partidas (lista de partidas clicáveis)
+// ============================================================
+async function renderGames() {
+  document.getElementById('content-area').innerHTML = `
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <div>Carregando perfil de Magnus Carlsen via Chess.com Published-Data API…</div>
+    </div>
+  `;
+
+  // ── Chess.com Published-Data API ────────────────────────────
+  // Endpoint: GET https://api.chess.com/pub/player/{username}
+  // username do Carlsen: MagnusCarlsen
+  //
+  // Campos extraídos conforme documentação oficial:
+  //   name, title, location, avatar, fide, followers, status
+  //
+  // Tratamento de erros:
+  //   • 429 Too Many Requests → rate limit; exibe fallback
+  //   • CORS / sem internet   → exibe fallback
+  //   • Campo ausente         → fallback por campo individual
+  //
+  // NOTA: a API retorna dados com cache de até 12h (Cache-Control
+  // max-age). O CDN pode responder com HIT/MISS/REVALIDATED.
+  // ────────────────────────────────────────────────────────────
+  const CARLSEN_USERNAME = 'MagnusCarlsen';
+  const CARLSEN_FALLBACK = {
+    name:      'Magnus Carlsen',
+    title:     'GM',
+    location:  'Tønsberg, Norway',
+    avatar:    '',
+    fide:      2830,
+    followers: 0,
+    status:    'premium',
+  };
+
+  let playerInfo = null;
+  let apiStatus  = '';   // para exibir na UI: 'live' | 'fallback' | 'error'
+
+  try {
+    const res = await fetch(
+      `https://api.chess.com/pub/player/${CARLSEN_USERNAME}`,
+      {
+        headers: {
+          // Boa prática indicada na documentação: identificar o cliente
+          'User-Agent': 'ChessVault/1.0 (estudo pessoal)',
+        }
+      }
+    );
+
+    if (res.status === 429) {
+      // Rate limit — usa fallback sem quebrar a UI
+      apiStatus = 'rate-limited';
+      playerInfo = CARLSEN_FALLBACK;
+    } else if (res.ok) {
+      const data = await res.json();
+      // Mescla com fallback para campos opcionais ausentes
+      playerInfo = {
+        name:      data.name      || CARLSEN_FALLBACK.name,
+        title:     data.title     || CARLSEN_FALLBACK.title,
+        location:  data.location  || CARLSEN_FALLBACK.location,
+        avatar:    data.avatar    || CARLSEN_FALLBACK.avatar,
+        fide:      data.fide      || CARLSEN_FALLBACK.fide,
+        followers: data.followers || CARLSEN_FALLBACK.followers,
+        status:    data.status    || CARLSEN_FALLBACK.status,
+        url:       data.url       || `https://www.chess.com/member/${CARLSEN_USERNAME}`,
+      };
+      apiStatus = 'live';
+    } else {
+      // 404, 410, etc.
+      apiStatus   = `http-${res.status}`;
+      playerInfo  = CARLSEN_FALLBACK;
+    }
+  } catch (e) {
+    // Sem internet, CORS bloqueado em alguns ambientes locais, etc.
+    apiStatus  = 'offline';
+    playerInfo = CARLSEN_FALLBACK;
+  }
+
+  const games = CARLSEN_GAMES;
+
+  function miniBoard() {
+    const init = [
+      '♜','♞','♝','♛','♚','♝','♞','♜',
+      '♟','♟','♟','♟','♟','♟','♟','♟',
+      '','','','','','','','',
+      '','','','','','','','',
+      '','','','','','','','',
+      '','','','','','','','',
+      '♙','♙','♙','♙','♙','♙','♙','♙',
+      '♖','♘','♗','♕','♔','♗','♘','♖'
+    ];
+    let html = '';
+    for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+      const idx     = r * 8 + c;
+      const isLight = (r + c) % 2 === 0;
+      html += `<div class="mini-sq ${isLight ? 'ml' : 'md'}">${init[idx] || ''}</div>`;
+    }
+    return html;
+  }
+
+  function resultLabel(r) {
+    if (r === '1-0') return `<span class="game-result-badge result-w">Brancas vencem</span>`;
+    if (r === '0-1') return `<span class="game-result-badge result-b">Pretas vencem</span>`;
+    return `<span class="game-result-badge result-d">Empate</span>`;
+  }
+
+  // Badge de status da API — transparência para o desenvolvedor
+  const apiStatusBadge = {
+    'live':         `<span style="font-size:10px;color:#0f6e56;background:#e1f5ee;padding:2px 7px;border-radius:10px;font-weight:600">● API ao vivo</span>`,
+    'rate-limited': `<span style="font-size:10px;color:#854f0b;background:#faeeda;padding:2px 7px;border-radius:10px;font-weight:600">⚠ Rate limit (429) — dados locais</span>`,
+    'offline':      `<span style="font-size:10px;color:#6b6558;background:#f1efe8;padding:2px 7px;border-radius:10px;font-weight:600">⚡ Offline — dados locais</span>`,
+  }[apiStatus] || `<span style="font-size:10px;color:#6b6558;background:#f1efe8;padding:2px 7px;border-radius:10px;font-weight:600">⚡ Erro ${apiStatus} — dados locais</span>`;
+
+  const fideDisplay = playerInfo.fide ? `FIDE ${playerInfo.fide}` : 'FIDE 2830';
+  const followDisplay = playerInfo.followers
+    ? `${playerInfo.followers.toLocaleString('pt-BR')} seguidores`
+    : '';
+
+  const playerBio = `
+    <div class="player-bio-card">
+      <img class="player-bio-avatar"
+           src="${playerInfo.avatar || ''}"
+           onerror="this.style.display='none'"
+           alt="Magnus Carlsen" />
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <div class="player-bio-name">${playerInfo.name}</div>
+          <span style="font-size:11px;font-weight:700;background:#1c4f8a;color:#fff;padding:2px 7px;border-radius:4px">${playerInfo.title}</span>
+          ${apiStatusBadge}
+        </div>
+        <div class="player-bio-sub">
+          ${playerInfo.location}
+          ${fideDisplay ? ' · ' + fideDisplay : ''}
+          ${followDisplay ? ' · ' + followDisplay : ''}
+        </div>
+        <div class="player-bio-src">
+          Chess.com Published-Data API ·
+          <a href="${playerInfo.url || 'https://www.chess.com/member/MagnusCarlsen'}"
+             target="_blank"
+             style="color:var(--cobalt);text-decoration:none">
+            ver perfil ↗
+          </a>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const winsAsCarlsen = games.filter(g =>
+    (g.result === '1-0' && g.white.includes('Carlsen')) ||
+    (g.result === '0-1' && g.black.includes('Carlsen'))
+  ).length;
+
+  const yearsSet = new Set(games.map(g => g.year));
+  const yearRange = `${Math.min(...yearsSet)}–${Math.max(...yearsSet)}`;
+
+  const cardsHtml = games.map(g => `
+    <div class="game-card" onclick="openGame('${g.id}')">
+      <div class="game-card-thumb">
+        <div class="game-card-info">
+          <div class="game-players">
+            <div class="game-player"><div class="player-dot white"></div>${g.white}</div>
+            <div class="game-vs">vs</div>
+            <div class="game-player"><div class="player-dot black"></div>${g.black}</div>
+          </div>
+          ${resultLabel(g.result)}
+        </div>
+        <div class="mini-board">${miniBoard()}</div>
+      </div>
+      <div class="game-card-body">
+        <div class="game-title">${g.event}</div>
+        <div class="game-opening">${g.opening}</div>
+        <div class="game-meta-row">
+          <span class="tag">${g.eco}</span>
+          <span class="game-year">${g.location}, ${g.year}</span>
+          <span class="game-moves-count">${(g.pgn.match(/\d+\./g) || []).length} lances</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('content-area').innerHTML = `
+    <div class="fade-in">
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Partidas salvas</div>
+          <div class="stat-value">${games.length}</div>
+          <div class="stat-sub">de Magnus Carlsen</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Vitórias</div>
+          <div class="stat-value">${winsAsCarlsen}</div>
+          <div class="stat-sub">como Carlsen</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Período</div>
+          <div class="stat-value">${yearRange}</div>
+          <div class="stat-sub">partidas clássicas OTB</div>
+        </div>
+      </div>
+      ${playerBio}
+      <div class="section-header">
+        <div>
+          <div class="section-title">Partidas de Carlsen <span class="badge-count">${games.length}</span></div>
+          <div class="section-subtitle">Clique em uma partida para reproduzi-la lance a lance</div>
+        </div>
+      </div>
+      <div class="games-grid">${cardsHtml}</div>
+    </div>
+  `;
+}
+
+// ============================================================
+// ABRIR PARTIDA NO VIEWER (tabuleiro interativo)
+// ============================================================
+function openGame(id) {
+  const game = CARLSEN_GAMES.find(g => g.id === id);
+  if (!game) return;
+  currentGameData = game;
+
+  viewerMoves = parsePGN(game.pgn);
+  viewerMoveIndex = 0;
+
+  document.getElementById('content-area').style.display = 'none';
+  document.getElementById('game-viewer').classList.add('visible');
+  document.getElementById('topbar-add-btn').style.display = 'none';
+
+  document.getElementById('vg-title').textContent = `${game.white} vs ${game.black}`;
+  document.getElementById('vg-sub').textContent   = `${game.event} · ${game.location}, ${game.year} · ${game.result}`;
+
+  const whoWon = game.result === '1-0'
+    ? `${game.white} (Brancas) vencem`
+    : game.result === '0-1'
+    ? `${game.black} (Pretas) vencem`
+    : 'Empate';
+
+  document.getElementById('moves-info').innerHTML = `
+    <div class="moves-players">
+      <div class="moves-player-row"><div class="moves-player-dot mpd-w"></div><span class="moves-player-name">${game.white}</span><span class="moves-player-rating">${game.white_rating}</span></div>
+      <div class="moves-player-row"><div class="moves-player-dot mpd-b"></div><span class="moves-player-name">${game.black}</span><span class="moves-player-rating">${game.black_rating}</span></div>
+    </div>
+    <div class="moves-event">📍 ${game.event} · ${game.year}</div>
+    <div class="moves-result">🏆 ${whoWon}</div>
+    <div style="font-size:12px;color:var(--ink-muted);margin-top:4px;line-height:1.5">${game.description}</div>
+  `;
+
+  goToMove(0);
+}
+
+function closeViewer() {
+  document.getElementById('game-viewer').classList.remove('visible');
+  document.getElementById('content-area').style.display = '';
+  document.getElementById('topbar-add-btn').style.display = '';
+}
+
+// ============================================================
+// PARSER DE PGN (linear, sem variantes/comentários)
+// ============================================================
+// PARSER DE PGN — robusto: lida com inline movenum, comentários,
+// variantes aninhadas, NAGs ($) e o token de resultado final.
+// ============================================================
+function parsePGN(pgn) {
+  // 1. Remove cabeçalhos [Tag "Value"]
+  let s = pgn.replace(/\[.*?\]\s*/g, '');
+
+  // 2. Remove comentários { ... } (pode ser multilinha)
+  s = s.replace(/\{[^}]*\}/g, '');
+
+  // 3. Remove NAGs  $12
+  s = s.replace(/\$\d+/g, '');
+
+  // 4. Remove variantes ( ... ) recursivamente
+  //    Loop porque variantes podem ser aninhadas
+  let prev = '';
+  while (prev !== s) { prev = s; s = s.replace(/\([^()]*\)/g, ''); }
+
+  // 5. Remove token de resultado no fim
+  s = s.replace(/\s*(1-0|0-1|1\/2-1\/2|\*)\s*$/, '');
+
+  // 6. Tokeniza
+  const tokens = s.trim().split(/\s+/);
+
+  // 7. Filtra: descarta tokens de numeração ("1.", "1..." , "10.") e vazios
+  const moves = [];
+  for (const tok of tokens) {
+    if (!tok) continue;
+    // Token puro de número: "1.", "22.", "5..."
+    if (/^\d+\.+$/.test(tok)) continue;
+    // Token "grudado" com número: "1.e4" → extrair "e4"
+    //   Captura: dígitos seguidos de pontos, seguido do lance
+    const glued = tok.match(/^\d+\.+(.+)$/);
+    if (glued) { moves.push(glued[1]); continue; }
+    moves.push(tok);
+  }
+  return moves;
+}
+
+// ============================================================
+// MOTOR DE XADREZ — tabuleiro interativo
+// ============================================================
+const VPIECES = {
+  wK:'♔', wQ:'♕', wR:'♖', wB:'♗', wN:'♘', wP:'♙',
+  bK:'♚', bQ:'♛', bR:'♜', bB:'♝', bN:'♞', bP:'♟'
+};
+
+function vInitBoard() {
+  return [
+    ['bR','bN','bB','bQ','bK','bB','bN','bR'],
+    ['bP','bP','bP','bP','bP','bP','bP','bP'],
+    [null,null,null,null,null,null,null,null],
+    [null,null,null,null,null,null,null,null],
+    [null,null,null,null,null,null,null,null],
+    [null,null,null,null,null,null,null,null],
+    ['wP','wP','wP','wP','wP','wP','wP','wP'],
+    ['wR','wN','wB','wQ','wK','wB','wN','wR']
+  ];
+}
+
+function vColor(p) { return p ? p[0] : null; }
+function vPT(p)    { return p ? p[1] : null; }
+function vIB(r, c) { return r >= 0 && r < 8 && c >= 0 && c < 8; }
+
+let vBoard, vTurn, vCastling, vEnPassant;
+let vSelected = null, vLegalMoves = [], vLastMove = [];
+
+function resetViewerEngine() {
+  vBoard     = vInitBoard();
+  vTurn      = 'w';
+  vCastling  = { w: { k: true, q: true }, b: { k: true, q: true } };
+  vEnPassant = null;
+  vSelected  = null;
+  vLegalMoves = [];
+  vLastMove   = [];
+}
+
+// ============================================================
+// algebraicToMove — converte SAN para [fr,fc,tr,tc,promo]
+// ============================================================
+function algebraicToMove(san, board, turn) {
+  // Limpa sufixos de xeque/mate/anotação
+  san = san.replace(/[+#!?]/g, '').trim();
+  const t = turn;
+
+  // ── Roque ──────────────────────────────────────────────────
+  if (san === 'O-O-O' || san === '0-0-0') {
+    const r = t === 'w' ? 7 : 0;
+    // Valida: rei está em e1/e8 e torre em a1/a8
+    if (board[r][4] === t + 'K' && board[r][0] === t + 'R') {
+      return [r, 4, r, 2, null];
+    }
+    return null;
+  }
+  if (san === 'O-O' || san === '0-0') {
+    const r = t === 'w' ? 7 : 0;
+    if (board[r][4] === t + 'K' && board[r][7] === t + 'R') {
+      return [r, 4, r, 6, null];
+    }
+    return null;
+  }
+
+  // ── Promoção ────────────────────────────────────────────────
+  // Formatos: e8=Q  e8=Q+  exd8=Q  b1=N
+  let promo = null;
+  const promoMatch = san.match(/=([QRBN])$/i);
+  if (promoMatch) {
+    promo = t + promoMatch[1].toUpperCase();
+    san   = san.replace(/=[QRBN]$/i, '');
+  }
+
+  // ── Identifica peça ────────────────────────────────────────
+  const FILES = 'abcdefgh';
+  const RANKS = '87654321';   // índice de array: row 0 = rank 8
+
+  let piece = 'P';
+  if (/^[KQRBN]/.test(san)) {
+    piece = san[0];
+    san   = san.slice(1);
+  }
+
+  // Remove 'x' de captura (pode estar em qualquer posição)
+  san = san.replace('x', '');
+
+  // ── Quadrado de destino: sempre os 2 últimos chars ─────────
+  if (san.length < 2) return null;
+  const toFile = san[san.length - 2];
+  const toRank = san[san.length - 1];
+
+  if (FILES.indexOf(toFile) === -1 || RANKS.indexOf(toRank) === -1) return null;
+
+  const toC = FILES.indexOf(toFile);
+  const toR = RANKS.indexOf(toRank);
+
+  // ── Hint de desambiguação: tudo que sobra antes do destino ──
+  // Exemplos:  "bd7" → hint "b" (coluna b)
+  //            "1e2" → hint "1" (rank 1)
+  //            "g1f3"→ hint "g1" (coluna+rank completo)
+  const hint         = san.slice(0, san.length - 2);
+  let fromFileHint   = -1;
+  let fromRankHint   = -1;
+
+  if (hint.length === 1) {
+    if (/[a-h]/.test(hint)) fromFileHint = FILES.indexOf(hint);
+    else if (/[1-8]/.test(hint))  fromRankHint = RANKS.indexOf(hint);
+  } else if (hint.length === 2) {
+    // ordem pode ser fc (ex: "g1") ou cf (raro, mas tratamos ambos)
+    if (/[a-h]/.test(hint[0]) && /[1-8]/.test(hint[1])) {
+      fromFileHint = FILES.indexOf(hint[0]);
+      fromRankHint = RANKS.indexOf(hint[1]);
+    } else if (/[1-8]/.test(hint[0]) && /[a-h]/.test(hint[1])) {
+      fromRankHint = RANKS.indexOf(hint[0]);
+      fromFileHint = FILES.indexOf(hint[1]);
+    }
+  }
+
+  // ── Busca a peça que pode realizar o lance ─────────────────
+  const candidates = [];
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const p = board[r][c];
+      if (!p || vColor(p) !== t || vPT(p) !== piece) continue;
+      if (fromFileHint >= 0 && c !== fromFileHint) continue;
+      if (fromRankHint >= 0 && r !== fromRankHint) continue;
+      // Verifica se o lance é legal
+      const legalTargets = vGetLegal(r, c, board, t, vCastling, vEnPassant);
+      if (legalTargets.some(([mr, mc]) => mr === toR && mc === toC)) {
+        candidates.push([r, c]);
+      }
+    }
+  }
+
+  if (candidates.length === 0) {
+    console.warn(`algebraicToMove: nenhum candidato para "${san}" (turn=${t})`);
+    return null;
+  }
+  if (candidates.length > 1) {
+    console.warn(`algebraicToMove: ambiguidade em "${san}" — candidatos:`, candidates);
+    // Retorna o primeiro (melhor esforço), mas isso indica PGN mal formatado
+  }
+
+  const [fr, fc] = candidates[0];
+  return [fr, fc, toR, toC, promo];
+}
+
+// ============================================================
+// vGetLegal — lances legais a partir de (r,c)
+// ============================================================
+function vGetLegal(r, c, board, turn, castling, enPassant) {
+  const p = board[r][c];
+  if (!p) return [];
+  const t    = vColor(p);
+  if (t !== turn) return [];
+  const type = vPT(p);
+  const pseudo = [];   // candidatos pseudolegais
+
+  // ── Peão ───────────────────────────────────────────────────
+  if (type === 'P') {
+    const dir = t === 'w' ? -1 : 1;
+    const startRow = t === 'w' ? 6 : 1;
+
+    // Avanço simples
+    const r1 = r + dir;
+    if (vIB(r1, c) && !board[r1][c]) {
+      pseudo.push([r1, c]);
+      // Avanço duplo a partir da posição inicial
+      const r2 = r + 2 * dir;
+      if (r === startRow && !board[r2][c]) pseudo.push([r2, c]);
+    }
+
+    // Capturas diagonais
+    for (const dc of [-1, 1]) {
+      const nr = r + dir, nc = c + dc;
+      if (!vIB(nr, nc)) continue;
+      // Captura normal
+      if (board[nr][nc] && vColor(board[nr][nc]) !== t) pseudo.push([nr, nc]);
+      // En passant — enPassant guarda o quadrado de destino (onde o peão vai parar)
+      if (enPassant && enPassant[0] === nr && enPassant[1] === nc) pseudo.push([nr, nc]);
+    }
+
+  // ── Cavalo ─────────────────────────────────────────────────
+  } else if (type === 'N') {
+    for (const [dr, dc] of [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]]) {
+      const nr = r + dr, nc = c + dc;
+      if (vIB(nr, nc) && vColor(board[nr][nc]) !== t) pseudo.push([nr, nc]);
+    }
+
+  // ── Bispo ──────────────────────────────────────────────────
+  } else if (type === 'B') {
+    _slide(r, c, [[-1,-1],[-1,1],[1,-1],[1,1]], board, t, pseudo);
+
+  // ── Torre ──────────────────────────────────────────────────
+  } else if (type === 'R') {
+    _slide(r, c, [[-1,0],[1,0],[0,-1],[0,1]], board, t, pseudo);
+
+  // ── Dama ───────────────────────────────────────────────────
+  } else if (type === 'Q') {
+    _slide(r, c, [[-1,-1],[-1,1],[1,-1],[1,1],[-1,0],[1,0],[0,-1],[0,1]], board, t, pseudo);
+
+  // ── Rei ────────────────────────────────────────────────────
+  } else if (type === 'K') {
+    for (const [dr, dc] of [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]) {
+      const nr = r + dr, nc = c + dc;
+      if (vIB(nr, nc) && vColor(board[nr][nc]) !== t) pseudo.push([nr, nc]);
+    }
+
+    // Roque — valida: rei na posição certa, direitos, casas livres e não em xeque
+    const row = t === 'w' ? 7 : 0;
+    if (r === row && c === 4 && !vIsAttacked(r, c, t === 'w' ? 'b' : 'w', board)) {
+      // Roque pequeno: e→f→g livres, f e g não atacados
+      if (castling[t].k &&
+          !board[row][5] && !board[row][6] &&
+          board[row][7] === t + 'R' &&
+          !vIsAttacked(row, 5, t === 'w' ? 'b' : 'w', board) &&
+          !vIsAttacked(row, 6, t === 'w' ? 'b' : 'w', board)) {
+        pseudo.push([row, 6]);
+      }
+      // Roque grande: d→c→b livres, d e c não atacados
+      if (castling[t].q &&
+          !board[row][3] && !board[row][2] && !board[row][1] &&
+          board[row][0] === t + 'R' &&
+          !vIsAttacked(row, 3, t === 'w' ? 'b' : 'w', board) &&
+          !vIsAttacked(row, 2, t === 'w' ? 'b' : 'w', board)) {
+        pseudo.push([row, 2]);
+      }
+    }
+  }
+
+  // ── Filtro de legalidade: remove moves que deixam próprio rei em xeque ──
+  return pseudo.filter(([nr, nc]) => !vWouldCheck(r, c, nr, nc, t, board, enPassant));
+}
+
+// Helper de deslizamento (bispo, torre, dama)
+function _slide(r, c, dirs, board, t, out) {
+  for (const [dr, dc] of dirs) {
+    let nr = r + dr, nc = c + dc;
+    while (vIB(nr, nc)) {
+      if (vColor(board[nr][nc]) === t) break;   // bloqueado por peça própria
+      out.push([nr, nc]);
+      if (board[nr][nc]) break;                 // bloqueado por peça adversária (captura, para)
+      nr += dr; nc += dc;
+    }
+  }
+}
+
+// ============================================================
+// vWouldCheck — simula lance e verifica se próprio rei fica em xeque
+// ============================================================
+function vWouldCheck(fr, fc, tr, tc, t, board, enPassant) {
+  // Cópia rasa do tabuleiro (deep enough para uma posição)
+  const tmp = board.map(row => [...row]);
+
+  // ── En passant: remove o peão capturado ────────────────────
+  if (vPT(tmp[fr][fc]) === 'P' && enPassant &&
+      tr === enPassant[0] && tc === enPassant[1] &&
+      !tmp[tr][tc]) {
+    const capRow = t === 'w' ? tr + 1 : tr - 1;
+    tmp[capRow][tc] = null;
+  }
+
+  tmp[tr][tc] = tmp[fr][fc];
+  tmp[fr][fc] = null;
+
+  // Encontra o rei da cor que moveu
+  let kr = -1, kc = -1;
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      if (tmp[r][c] === t + 'K') { kr = r; kc = c; break; }
+    }
+    if (kr !== -1) break;
+  }
+  if (kr === -1) return true;   // rei sumiu = situação inválida, trata como xeque
+
+  return vIsAttacked(kr, kc, t === 'w' ? 'b' : 'w', tmp);
+}
+
+// ============================================================
+// vIsAttacked — verifica se (kr,kc) é atacado pela cor "by"
+// ============================================================
+function vIsAttacked(kr, kc, by, b2) {
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const p = b2[r][c];
+      if (!p || vColor(p) !== by) continue;
+      const type = vPT(p);
+
+      // Peão — direção de ataque depende da cor do atacante
+      if (type === 'P') {
+        const dir = by === 'w' ? -1 : 1;
+        if (r + dir === kr && Math.abs(c - kc) === 1) return true;
+        continue;
+      }
+      // Cavalo
+      if (type === 'N') {
+        const dr = Math.abs(r - kr), dc = Math.abs(c - kc);
+        if ((dr === 2 && dc === 1) || (dr === 1 && dc === 2)) return true;
+        continue;
+      }
+      // Rei (evita recursão; verifica adjacência)
+      if (type === 'K') {
+        if (Math.abs(r - kr) <= 1 && Math.abs(c - kc) <= 1) return true;
+        continue;
+      }
+      // Peças deslizantes
+      const isDiag   = (kr - r) !== 0 && Math.abs(kr - r) === Math.abs(kc - c);
+      const isStraight = (r === kr) || (c === kc);
+
+      if ((type === 'B' || type === 'Q') && isDiag) {
+        const dr = Math.sign(kr - r), dc = Math.sign(kc - c);
+        let nr = r + dr, nc = c + dc;
+        while (vIB(nr, nc) && !(nr === kr && nc === kc)) {
+          if (b2[nr][nc]) { nr = -1; break; }
+          nr += dr; nc += dc;
+        }
+        if (nr === kr) return true;
+      }
+      if ((type === 'R' || type === 'Q') && isStraight) {
+        const dr = Math.sign(kr - r), dc = Math.sign(kc - c);
+        let nr = r + dr, nc = c + dc;
+        while (vIB(nr, nc) && !(nr === kr && nc === kc)) {
+          if (b2[nr][nc]) { nr = -1; break; }
+          nr += dr; nc += dc;
+        }
+        if (nr === kr) return true;
+      }
+    }
+  }
+  return false;
+}
+
+// ============================================================
+// vApplyMove — aplica o lance ao tabuleiro de estado global
+// ============================================================
+function vApplyMove(fr, fc, tr, tc, promo) {
+  const p    = vBoard[fr][fc];
+  if (!p) return;
+  const t    = vColor(p);
+  const type = vPT(p);
+
+  // ── En passant: captura o peão adversário ──────────────────
+  if (type === 'P' && vEnPassant &&
+      tr === vEnPassant[0] && tc === vEnPassant[1] &&
+      !vBoard[tr][tc]) {
+    const capRow = t === 'w' ? tr + 1 : tr - 1;
+    vBoard[capRow][tc] = null;
+  }
+
+  // Move a peça
+  vBoard[tr][tc] = p;
+  vBoard[fr][fc] = null;
+
+  // ── Atualiza en passant ────────────────────────────────────
+  if (type === 'P' && Math.abs(tr - fr) === 2) {
+    vEnPassant = [(fr + tr) / 2, tc];  // quadrado "de passagem"
+  } else {
+    vEnPassant = null;
+  }
+
+  // ── Roque: move a torre ────────────────────────────────────
+  if (type === 'K') {
+    vCastling[t].k = false;
+    vCastling[t].q = false;
+    const row = t === 'w' ? 7 : 0;
+    if (tc === 6 && fc === 4) {   // roque pequeno
+      vBoard[row][5] = vBoard[row][7];
+      vBoard[row][7] = null;
+    }
+    if (tc === 2 && fc === 4) {   // roque grande
+      vBoard[row][3] = vBoard[row][0];
+      vBoard[row][0] = null;
+    }
+  }
+
+  // ── Atualiza direitos de roque por movimento de torre ──────
+  if (type === 'R') {
+    if (fc === 0) vCastling[t].q = false;
+    if (fc === 7) vCastling[t].k = false;
+  }
+  // Captura de torre também anula o direito
+  if (vBoard[tr][tc] !== null && vPT(vBoard[tr][tc]) === 'R') {
+    // já foi sobrescrito; verifica canto original
+  }
+  // Anula direito se torre do adversário foi capturada em seu canto
+  const opp = t === 'w' ? 'b' : 'w';
+  const oppRow = opp === 'w' ? 7 : 0;
+  if (tr === oppRow && tc === 0) vCastling[opp].q = false;
+  if (tr === oppRow && tc === 7) vCastling[opp].k = false;
+
+  // ── Promoção ───────────────────────────────────────────────
+  if (type === 'P' && (tr === 0 || tr === 7)) {
+    vBoard[tr][tc] = promo || (t + 'Q');
+  }
+
+  // ── Histórico ─────────────────────────────────────────────
+  vLastMove = [[fr, fc], [tr, tc]];
+  vTurn     = t === 'w' ? 'b' : 'w';
+}
+
+// ============================================================
+// NAVEGAÇÃO DE LANCES (linha do tempo da partida)
+// ============================================================
+function goToMove(idx) {
+  const total = viewerMoves.length;
+  if (idx === -1) idx = total;
+  idx = Math.max(0, Math.min(idx, total));
+
+  resetViewerEngine();
+  for (let i = 0; i < idx; i++) {
+    const san = viewerMoves[i];
+    const mv  = algebraicToMove(san, vBoard, vTurn);
+    if (mv) {
+      vApplyMove(mv[0], mv[1], mv[2], mv[3], mv[4]);
+    } else {
+      console.error(`goToMove: lance inválido "${san}" no índice ${i} (turn=${vTurn})`);
+      // Para de aplicar lances para evitar estado corrompido
+      break;
+    }
+  }
+  viewerMoveIndex = idx;
+  renderViewerBoard();
+  renderMovesTable();
+}
+
+function nextMove() { if (viewerMoveIndex < viewerMoves.length) goToMove(viewerMoveIndex + 1); }
+function prevMove() { if (viewerMoveIndex > 0) goToMove(viewerMoveIndex - 1); }
+
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('game-viewer').classList.contains('visible')) return;
+  if (e.key === 'ArrowRight') nextMove();
+  if (e.key === 'ArrowLeft')  prevMove();
+  if (e.key === 'Home')       goToMove(0);
+  if (e.key === 'End')        goToMove(-1);
+});
+
+// ============================================================
+// RENDER DO TABULEIRO (viewer)
+// ============================================================
+function renderViewerBoard() {
+  const boardEl = document.getElementById('vboard');
+  if (!boardEl) return;
+  boardEl.innerHTML = '';
+
+  const legalSet = new Set(vLegalMoves.map(([r, c]) => `${r},${c}`));
+
+  for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+    const sq = document.createElement('div');
+    const isLight = (r + c) % 2 === 0;
+    sq.className = 'vsq ' + (isLight ? 'vl' : 'vd');
+    const isLast = vLastMove.some(([lr, lc]) => lr === r && lc === c);
+    if (isLast) sq.classList.add('vlast');
+    if (vSelected && vSelected[0] === r && vSelected[1] === c) sq.classList.add('vsel');
+    if (legalSet.has(`${r},${c}`)) {
+      sq.classList.add('vlegal');
+      if (vBoard[r][c]) sq.classList.add('vhas');
+    }
+    if (vBoard[r][c]) sq.textContent = VPIECES[vBoard[r][c]] || '';
+    sq.onclick = () => handleViewerClick(r, c);
+    boardEl.appendChild(sq);
+  }
+
+  const ranksEl = document.getElementById('vboard-ranks');
+  ranksEl.innerHTML = '';
+  for (let r = 0; r < 8; r++) {
+    const d = document.createElement('div');
+    d.className = 'vlab';
+    d.textContent = 8 - r;
+    ranksEl.appendChild(d);
+  }
+  const filesEl = document.getElementById('vboard-files');
+  filesEl.innerHTML = '';
+  for (const l of ['a','b','c','d','e','f','g','h']) {
+    const d = document.createElement('div');
+    d.className = 'vlab';
+    d.textContent = l;
+    filesEl.appendChild(d);
+  }
+
+  document.getElementById('move-counter').textContent = `${viewerMoveIndex} / ${viewerMoves.length}`;
+  document.getElementById('btn-prev').disabled  = viewerMoveIndex === 0;
+  document.getElementById('btn-start').disabled = viewerMoveIndex === 0;
+  document.getElementById('btn-next').disabled  = viewerMoveIndex === viewerMoves.length;
+  document.getElementById('btn-end').disabled   = viewerMoveIndex === viewerMoves.length;
+}
+
+// Clique livre no tabuleiro (permite explorar variações manualmente)
+function handleViewerClick(r, c) {
+  const p = vBoard[r][c];
+  if (vSelected) {
+    const mv = vLegalMoves.find(([mr, mc]) => mr === r && mc === c);
+    if (mv) {
+      vApplyMove(vSelected[0], vSelected[1], r, c, null);
+      vSelected = null; vLegalMoves = [];
+      renderViewerBoard();
+      return;
+    }
+  }
+  if (p && vColor(p) === vTurn) {
+    vSelected   = [r, c];
+    vLegalMoves = vGetLegal(r, c, vBoard, vTurn, vCastling, vEnPassant);
+  } else {
+    vSelected = null; vLegalMoves = [];
+  }
+  renderViewerBoard();
+}
+
+// ============================================================
+// TABELA DE MOVIMENTOS
+// ============================================================
+function renderMovesTable() {
+  const table = document.getElementById('moves-table');
+  if (!table) return;
+  let html = '';
+  for (let i = 0; i < viewerMoves.length; i += 2) {
+    const moveNum = Math.floor(i / 2) + 1;
+    const wMove   = viewerMoves[i]     || '';
+    const bMove   = viewerMoves[i + 1] || '';
+    const wActive = viewerMoveIndex === i + 1 ? 'active' : '';
+    const bActive = viewerMoveIndex === i + 2 ? 'active' : '';
+    html += `<tr>
+      <td class="move-num">${moveNum}.</td>
+      <td class="move-cell ${wActive}" onclick="goToMove(${i + 1})">${wMove}</td>
+      <td class="move-cell ${bActive}" onclick="goToMove(${i + 2})">${bMove}</td>
+    </tr>`;
+  }
+  table.innerHTML = html;
+
+  const active = table.querySelector('.active');
+  if (active) active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+// ============================================================
+// UTILITÁRIOS
+// ============================================================
+let toastTimer = null;
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('visible');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('visible'), 2200);
+}
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@ import com.example.chessvault.game.service.GameService;
 import com.example.chessvault.game.request.CreateGameRequest;
 import com.example.chessvault.game.request.UpdateGameRequest;
 import com.example.chessvault.game.response.GameResponse;
-import com.chessvault.shared.pagination.PageResponse;
+import com.example.chessvault.shared.response.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

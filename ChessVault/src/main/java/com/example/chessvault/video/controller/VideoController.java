@@ -1,6 +1,6 @@
 package com.example.chessvault.video.controller;
 
-import com.chessvault.shared.pagination.PageResponse;
+import com.example.chessvault.shared.response.PageResponse;
 import com.example.chessvault.video.response.VideoResponse;
 import com.example.chessvault.video.service.VideoService;
 import lombok.RequiredArgsConstructor;

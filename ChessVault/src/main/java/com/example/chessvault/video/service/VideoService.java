@@ -1,7 +1,7 @@
 package com.example.chessvault.video.service;
 
-import com.chessvault.shared.exception.ResourceNotFoundException;
-import com.chessvault.shared.pagination.PageResponse;
+import com.example.chessvault.shared.exception.ResourceNotFoundException;
+import com.example.chessvault.shared.response.PageResponse;
 import com.example.chessvault.video.response.VideoResponse;
 import com.example.chessvault.video.entity.Video;
 import com.example.chessvault.video.repository.VideoRepository;

@@ -1,5 +1,7 @@
 package com.example.chessvault.user.entity;
 
+import com.example.chessvault.auth.domain.Role;
+import com.example.chessvault.shared.entity.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
