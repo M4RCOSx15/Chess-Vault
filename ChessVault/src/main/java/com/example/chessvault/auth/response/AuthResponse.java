@@ -1,7 +1,7 @@
 package com.example.chessvault.auth.response;
 
 public record AuthResponse(
-        String accessToken,
-        String refreshToken,
-        String tokenType
+        String message,
+        String userId,
+        String email
 ) {}
