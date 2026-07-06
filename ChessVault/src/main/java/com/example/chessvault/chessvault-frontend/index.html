@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chess Vault - Biblioteca de Partidas de Xadrez</title>
+  <meta name="description" content="Armazene, organize e revise suas partidas de xadrez em um só lugar." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>♚</text></svg>" />
+  
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><text y='135' font-size='135'>♚</text></svg>" />
+  
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<!-- ========== AUTH SCREEN ========== -->
+<div id="auth-screen" class="visible">
+  <div class="auth-card">
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div class="auth-logo-icon">♚</div>
+      <div>
+        <h1 class="auth-logo-text">Chess Vault</h1>
+        <p class="auth-logo-sub">Biblioteca de Xadrez</p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login">Login</button>
+      <button class="auth-tab" data-tab="register">Registrar</button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="login-form" class="auth-form active">
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input id="login-email" type="email" class="auth-input" placeholder="seu@email.com" required />
+      </div>
+
+      <div class="auth-field">
+        <label class="auth-label">Senha</label>
+        <input id="login-password" type="password" class="auth-input" placeholder="Sua senha" required />
+      </div>
+
+      <button type="submit" class="auth-submit">Entrar</button>
+    </form>
+
+    <!-- Register Form -->
+    <form id="register-form" class="auth-form">
+      <div class="auth-field">
+        <label class="auth-label">Nome</label>
+        <input id="register-name" type="text" class="auth-input" placeholder="Seu nome completo" required />
+      </div>
+
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input id="register-email" type="email" class="auth-input" placeholder="seu@email.com" required />
+      </div>
+
+      <div class="auth-field">
+        <label class="auth-label">Senha</label>
+        <input id="register-password" type="password" class="auth-input" placeholder="Mínimo 8 caracteres" required />
+      </div>
+
+      <div class="auth-field">
+        <label class="auth-label">Confirmar Senha</label>
+        <input id="register-confirm-password" type="password" class="auth-input" placeholder="Repita a senha" required />
+      </div>
+
+      <button type="submit" class="auth-submit">Criar Conta</button>
+    </form>
+
+    <!-- Footer -->
+    <div class="auth-footer">
+      <p>Desenvolvimento & Xadrez • <a href="#">Docs</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== APP SCREEN ========== -->
+<div id="app-screen" class="hidden">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <header class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">♚</div>
+        <div>
+          <h1 class="sidebar-logo-text">Chess Vault</h1>
+          <p class="sidebar-logo-sub">Beta</p>
+        </div>
+      </div>
+    </header>
+
+    <nav class="sidebar-nav">
+      <!-- Study Section -->
+      <div class="nav-section-label">Estudo</div>
+      <button class="nav-item active" data-section="dashboard">
+        <span class="nav-item-icon">📊</span>
+        <span>Dashboard</span>
+      </button>
+      <button class="nav-item" data-section="games">
+        <span class="nav-item-icon">♞</span>
+        <span>Minhas Partidas</span>
+      </button>
+      <button class="nav-item" data-section="books">
+        <span class="nav-item-icon">📚</span>
+        <span>Livros</span>
+      </button>
+      <button class="nav-item" data-section="videos">
+        <span class="nav-item-icon">🎥</span>
+        <span>Vídeos</span>
+      </button>
+
+      <!-- Account Section -->
+      <div class="nav-section-label">Conta</div>
+      <button class="nav-item" data-section="profile">
+        <span class="nav-item-icon">👤</span>
+        <span>Meu Perfil</span>
+      </button>
+      <button class="nav-item" data-section="logout">
+        <span class="nav-item-icon">🚪</span>
+        <span>Sair</span>
+      </button>
+    </nav>
+
+    <!-- User Info -->
+    <footer class="sidebar-footer">
+      <div class="user-pill">
+        <div class="user-avatar">U</div>
+        <div>
+          <div class="user-name">Usuário</div>
+          <div class="user-role">Jogador</div>
+        </div>
+      </div>
+    </footer>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Topbar -->
+    <header class="topbar">
+      <h2 class="topbar-title">Dashboard</h2>
+      <div class="topbar-actions">
+        <button id="create-game-btn" class="btn btn-small">+ Partida</button>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <div class="content-area">
+      <!-- Dashboard Section -->
+      <section id="dashboard-section" data-section-content style="display: block;">
+        <div class="section-header">
+          <h2 class="section-title">Dashboard</h2>
+        </div>
+
+        <div class="stats-row" id="dashboard-stats">
+          <div class="stat-card">
+            <div class="stat-label">Total de Partidas</div>
+            <div class="stat-value">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Última Partida</div>
+            <div class="stat-value">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Usuário</div>
+            <div class="stat-value">-</div>
+          </div>
+        </div>
+
+        <div class="section-header" style="margin-top: 2rem;">
+          <h3 class="section-title" style="font-size: 18px;">Partidas Recentes</h3>
+        </div>
+
+        <div id="recent-games">
+          <!-- Carregado dinamicamente -->
+        </div>
+      </section>
+
+      <!-- Games Section -->
+      <section id="games-section" data-section-content style="display: none;">
+        <div class="section-header">
+          <h2 class="section-title">Minhas Partidas</h2>
+        </div>
+
+        <div class="games-container">
+          <div class="games-toolbar">
+            <div class="search-box">
+              <span class="search-icon">🔍</span>
+              <input id="games-search" type="text" class="search-input" placeholder="Buscar por jogador...">
+            </div>
+            <div class="filters-group">
+              <select id="result-filter" class="filter-select">
+                <option value="">Todos os resultados</option>
+                <option value="1-0">Vitória (1-0)</option>
+                <option value="0-1">Derrota (0-1)</option>
+                <option value="1/2-1/2">Empate (½-½)</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="games-list">
+            <!-- Carregado dinamicamente -->
+          </div>
+
+          <div id="games-pagination">
+            <!-- Paginação carregada dinamicamente -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Books Section -->
+      <section id="books-section" data-section-content style="display: none;">
+        <div class="section-header">
+          <h2 class="section-title">Livros de Xadrez</h2>
+        </div>
+        <p>Em desenvolvimento...</p>
+      </section>
+
+      <!-- Videos Section -->
+      <section id="videos-section" data-section-content style="display: none;">
+        <div class="section-header">
+          <h2 class="section-title">Vídeos Educacionais</h2>
+        </div>
+        <p>Em desenvolvimento...</p>
+      </section>
+
+      <!-- Profile Section -->
+      <section id="profile-section" data-section-content style="display: none;">
+        <div class="section-header">
+          <h2 class="section-title">Meu Perfil</h2>
+        </div>
+        <form onsubmit="handleProfileSubmit(document.getElementById('profile-name').value); return false;">
+          <div class="form-group">
+            <label class="form-label">Nome</label>
+            <input id="profile-name" type="text" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input id="profile-email" type="email" class="form-input" disabled>
+          </div>
+          <button type="submit" class="btn btn-primary">Salvar Mudanças</button>
+        </form>
+      </section>
+
+      <!-- Game Viewer Section -->
+      <section id="game-viewer-section" data-section-content style="display: none;">
+        <div class="section-header">
+          <h2 class="section-title">Visualizador de Partida</h2>
+        </div>
+
+        <div class="game-viewer-container">
+          <div class="game-viewer-board">
+            <div class="board-wrapper">
+              <div id="vboard"></div>
+              <div id="vboard-ranks"></div>
+              <div id="vboard-files"></div>
+            </div>
+
+            <div class="board-controls">
+              <button id="btn-start" class="btn-nav" title="Início">⏮️</button>
+              <button id="btn-prev" class="btn-nav" title="Anterior">⏪</button>
+              <span id="move-counter">0 / 0</span>
+              <button id="btn-next" class="btn-nav" title="Próximo">⏩</button>
+              <button id="btn-end" class="btn-nav" title="Fim">⏭️</button>
+            </div>
+          </div>
+
+          <div class="game-viewer-moves">
+            <div id="game-info-panel" class="game-info-panel">
+              <!-- Carregado dinamicamente -->
+            </div>
+
+            <div class="moves-panel">
+              <h3 class="moves-title">Movimentos</h3>
+              <div class="moves-table-wrapper">
+                <table id="moves-table">
+                  <!-- Carregado dinamicamente -->
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast"></div>
+
+<!-- Modals -->
+<!-- Create Game Modal -->
+<div id="create-game-overlay" class="modal-overlay">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-header">
+      <h2 class="modal-title">Nova Partida</h2>
+      <button class="modal-close">✕</button>
+    </div>
+    <form id="create-game-form" class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Título *</label>
+        <input type="text" class="form-input" name="title" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Jogador Brancas</label>
+        <input type="text" class="form-input" name="whitePlayer">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Jogador Pretas</label>
+        <input type="text" class="form-input" name="blackPlayer">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Resultado</label>
+        <select class="form-select" name="result">
+          <option value="">-</option>
+          <option value="1-0">Vitória Brancas (1-0)</option>
+          <option value="0-1">Vitória Pretas (0-1)</option>
+          <option value="1/2-1/2">Empate (½-½)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">PGN</label>
+        <textarea class="form-textarea" name="pgnContent"></textarea>
+      </div>
+    </form>
+    <div class="modal-footer">
+      <button type="submit" form="create-game-form" class="btn btn-primary">Criar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/games.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>
