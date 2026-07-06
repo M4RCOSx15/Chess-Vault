@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chess Vault</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4ef;
+    --surface: #efefea;
+    --surface-hover: #e8e7e1;
+    --card: #ffffff;
+    --border: rgba(60,55,40,0.13);
+    --border-strong: rgba(60,55,40,0.22);
+    --ink: #1e1c16;
+    --ink-muted: #6b6558;
+    --ink-faint: #9e9890;
+    --cobalt: #1c4f8a;
+    --cobalt-light: #e6eef8;
+    --cobalt-hover: #153d6e;
+    --amber: #b06000;
+    --amber-light: #fdf3e3;
+    --sidebar-w: 230px;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --mono: 'Courier New', monospace;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  /* ========== AUTH SCREEN ========== */
+  #auth-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    padding: 2rem;
+  }
+
+  .auth-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2.5rem 2.5rem 2rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 4px 24px rgba(30,28,22,0.08);
+  }
+
+  .auth-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+
+  .auth-logo-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--ink);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .auth-logo-text {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: var(--ink);
+  }
+
+  .auth-logo-sub {
+    font-size: 12px;
+    color: var(--ink-faint);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .auth-tabs {
+    display: flex;
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    padding: 3px;
+    margin-bottom: 1.75rem;
+    border: 1px solid var(--border);
+  }
+
+  .auth-tab {
+    flex: 1;
+    padding: 7px;
+    border: none;
+    background: transparent;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    cursor: pointer;
+    transition: all 0.18s;
+    font-family: var(--font);
+  }
+
+  .auth-tab.active {
+    background: var(--card);
+    color: var(--ink);
+    box-shadow: 0 1px 4px rgba(30,28,22,0.1);
+  }
+
+  .field {
+    margin-bottom: 1rem;
+  }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    margin-bottom: 5px;
+    letter-spacing: 0.01em;
+  }
+
+  .field input {
+    width: 100%;
+    padding: 10px 13px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+    font-family: var(--font);
+    transition: border-color 0.15s;
+    outline: none;
+  }
+
+  .field input:focus {
+    border-color: var(--cobalt);
+    background: #fff;
+  }
+
+  .field input::placeholder {
+    color: var(--ink-faint);
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 11px;
+    background: var(--ink);
+    color: var(--bg);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.15s, transform 0.1s;
+    margin-top: 0.5rem;
+  }
+
+  .btn-primary:hover { background: #3a3826; }
+  .btn-primary:active { transform: scale(0.99); }
+
+  .auth-footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-faint);
+    margin-top: 1.25rem;
+  }
+
+  .auth-footer a {
+    color: var(--cobalt);
+    text-decoration: none;
+  }
+
+  /* ========== APP SCREEN ========== */
+  #app-screen {
+    display: none;
+    min-height: 100vh;
+    flex-direction: row;
+  }
+
+  #app-screen.visible {
+    display: flex;
+  }
+
+  /* ========== SIDEBAR ========== */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .sidebar-header {
+    padding: 1.5rem 1.25rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sidebar-logo-icon {
+    width: 36px;
+    height: 36px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .sidebar-logo-text {
+    font-size: 17px;
+    font-weight: 700;
+    color: #f5f4ef;
+    letter-spacing: -0.3px;
+  }
+
+  .sidebar-logo-sub {
+    font-size: 10px;
+    color: rgba(245,244,239,0.4);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: 1rem 0.75rem;
+    overflow-y: auto;
+  }
+
+  .nav-section-label {
+    font-size: 10px;
+    color: rgba(245,244,239,0.35);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    padding: 0 0.5rem;
+    margin-bottom: 0.5rem;
+    margin-top: 1.25rem;
+  }
+
+  .nav-section-label:first-child { margin-top: 0; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: var(--radius-sm);
+    color: rgba(245,244,239,0.65);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.15s;
+    margin-bottom: 2px;
+    border: 1px solid transparent;
+    user-select: none;
+  }
+
+  .nav-item:hover {
+    background: rgba(255,255,255,0.07);
+    color: #f5f4ef;
+  }
+
+  .nav-item.active {
+    background: rgba(245,244,239,0.12);
+    color: #f5f4ef;
+    border-color: rgba(245,244,239,0.12);
+  }
+
+  .nav-item-icon {
+    font-size: 17px;
+    width: 20px;
+    text-align: center;
+  }
+
+  .sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .user-pill {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .user-pill:hover { background: rgba(255,255,255,0.07); }
+
+  .user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--cobalt);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    letter-spacing: 0.01em;
+  }
+
+  .user-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(245,244,239,0.85);
+  }
+
+  .user-role {
+    font-size: 11px;
+    color: rgba(245,244,239,0.4);
+  }
+
+  /* ========== MAIN ========== */
+  main {
+    flex: 1;
+    min-width: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .topbar {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .topbar-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.2px;
+  }
+
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-icon {
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border);
+    background: transparent;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--ink-muted);
+    font-size: 16px;
+    transition: all 0.15s;
+  }
+
+  .btn-icon:hover {
+    background: var(--surface-hover);
+    color: var(--ink);
+    border-color: var(--border-strong);
+  }
+
+  .btn-small {
+    padding: 7px 14px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--bg);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .btn-small:hover { background: #3a3826; border-color: #3a3826; }
+
+  .content-area {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+  }
+
+  /* ========== SECTION HEADER ========== */
+  .section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.4px;
+  }
+
+  .section-subtitle {
+    font-size: 14px;
+    color: var(--ink-muted);
+    margin-top: 3px;
+  }
+
+  .badge-count {
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    padding: 3px 10px;
+    margin-left: 10px;
+    vertical-align: middle;
+  }
+
+  /* ========== STATS ROW ========== */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+
+  .stat-value {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+
+  .stat-sub {
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+
+  /* ========== BOOKS GRID ========== */
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .book-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .book-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(30,28,22,0.09);
+  }
+
+  .book-cover {
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .book-cover-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.08;
+    background-image: repeating-linear-gradient(
+      45deg,
+      var(--ink) 0,
+      var(--ink) 1px,
+      transparent 0,
+      transparent 50%
+    );
+    background-size: 12px 12px;
+  }
+
+  .book-body {
+    padding: 12px 14px 14px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .book-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.3;
+    letter-spacing: -0.1px;
+  }
+
+  .book-author {
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+
+  .book-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--cobalt-light);
+    color: var(--cobalt);
+    border: 1px solid rgba(28,79,138,0.15);
+  }
+
+  .tag.amber {
+    background: var(--amber-light);
+    color: var(--amber);
+    border-color: rgba(176,96,0,0.15);
+  }
+
+  .book-rating {
+    font-size: 11px;
+    color: var(--amber);
+    font-weight: 600;
+    margin-left: auto;
+  }
+
+  /* ========== VIDEOS GRID ========== */
+  .videos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .video-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+
+  .video-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(30,28,22,0.09);
+  }
+
+  .video-thumb {
+    height: 160px;
+    background: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .video-thumb-board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    width: 100%;
+    height: 100%;
+    opacity: 0.3;
+  }
+
+  .board-cell { width: 100%; height: 100%; }
+  .board-cell.light { background: #c8b58a; }
+  .board-cell.dark  { background: #5c4033; }
+
+  .play-btn {
+    position: absolute;
+    width: 46px;
+    height: 46px;
+    background: rgba(245,244,239,0.92);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--ink);
+    transition: transform 0.15s;
+    padding-left: 3px;
+  }
+
+  .video-card:hover .play-btn { transform: scale(1.1); }
+
+  .video-duration {
+    position: absolute;
+    bottom: 8px;
+    right: 10px;
+    background: rgba(0,0,0,0.72);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    letter-spacing: 0.04em;
+  }
+
+  .video-body {
+    padding: 12px 14px 14px;
+  }
+
+  .video-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.35;
+    margin-bottom: 5px;
+    letter-spacing: -0.1px;
+  }
+
+  .video-channel {
+    font-size: 12px;
+    color: var(--ink-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .video-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  /* ========== ANIMATIONS ========== */
+  .fade-in {
+    animation: fadeIn 0.22s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ========== TOAST ========== */
+  .toast {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: var(--ink);
+    color: var(--bg);
+    padding: 11px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    z-index: 999;
+    animation: slideUp 0.2s ease;
+    display: none;
+  }
+
+  .toast.visible { display: block; }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 640px) {
+    .sidebar { display: none; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .books-grid { grid-template-columns: 1fr 1fr; }
+    .videos-grid { grid-template-columns: 1fr; }
+    .content-area { padding: 1rem; }
+    .topbar { padding: 0 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== AUTH SCREEN ========== -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">♟</div>
+      <div>
+        <div class="auth-logo-text">Chess Vault</div>
+        <div class="auth-logo-sub">Biblioteca pessoal</div>
+      </div>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Entrar</button>
+      <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Cadastrar</button>
+    </div>
+
+    <!-- Formulário de Login -->
+    <div id="form-login">
+      <div class="field">
+        <label for="login-email">E-mail</label>
+        <input type="email" id="login-email" placeholder="seu@email.com" />
+      </div>
+      <div class="field">
+        <label for="login-password">Senha</label>
+        <input type="password" id="login-password" placeholder="••••••••" />
+      </div>
+      <button class="btn-primary" onclick="handleLogin()">Entrar na Vault</button>
+      <p class="auth-footer">Esqueceu a senha? <a href="#">Recuperar</a></p>
+    </div>
+
+    <!-- Formulário de Cadastro -->
+    <div id="form-register" style="display:none">
+      <div class="field">
+        <label for="register-name">Nome completo</label>
+        <input type="text" id="register-name" placeholder="Seu nome" />
+      </div>
+      <div class="field">
+        <label for="register-email">E-mail</label>
+        <input type="email" id="register-email" placeholder="seu@email.com" />
+      </div>
+      <div class="field">
+        <label for="register-password">Senha</label>
+        <input type="password" id="register-password" placeholder="Mínimo 8 caracteres" />
+      </div>
+      <button class="btn-primary" onclick="handleRegister()">Criar conta</button>
+      <p class="auth-footer">Ao cadastrar, você concorda com os termos de uso.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== APP SCREEN ========== -->
+<div id="app-screen">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">♟</div>
+        <div>
+          <div class="sidebar-logo-text">Chess Vault</div>
+          <div class="sidebar-logo-sub">Biblioteca</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Coleção</div>
+      <div class="nav-item active" id="nav-books" onclick="navigateTo('books')">
+        <span class="nav-item-icon">📚</span>
+        <span>Livros</span>
+      </div>
+      <div class="nav-item" id="nav-videos" onclick="navigateTo('videos')">
+        <span class="nav-item-icon">▶</span>
+        <span>Vídeos</span>
+      </div>
+
+      <div class="nav-section-label">Estudo</div>
+      <div class="nav-item" onclick="showToast('Em breve!')">
+        <span class="nav-item-icon">♟</span>
+        <span>Partidas</span>
+      </div>
+      <div class="nav-item" onclick="showToast('Em breve!')">
+        <span class="nav-item-icon">🗂</span>
+        <span>Aperturas</span>
+      </div>
+      <div class="nav-item" onclick="showToast('Em breve!')">
+        <span class="nav-item-icon">📊</span>
+        <span>Progresso</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-pill" onclick="showToast('Perfil em breve!')">
+        <div class="user-avatar" id="sidebar-avatar">M</div>
+        <div>
+          <div class="user-name" id="sidebar-name">Marcos</div>
+          <div class="user-role">Estudante</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Livros</div>
+      <div class="topbar-actions">
+        <button class="btn-icon" onclick="showToast('Busca em breve!')" title="Buscar">🔍</button>
+        <button class="btn-icon" onclick="showToast('Filtros em breve!')" title="Filtrar">⚙</button>
+        <button class="btn-small" onclick="showToast('Adicionar em breve!')">
+          <span>+</span>
+          <span id="add-label">Adicionar livro</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="content-area" id="content-area">
+      <!-- Conteúdo dinâmico via JS -->
+    </div>
+  </main>
+
+</div>
+
+<!-- Toast de notificação -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ============================================================
+  // DADOS MOCK — substituir por fetch() nas funções abaixo
+  // ============================================================
+  const MOCK_BOOKS = [
+    { id:1, title:"My System",                          author:"Nimzowitsch",      level:"Avançado",      rating:"★ 4.9", color:"#e8d5b7", emoji:"♟" },
+    { id:2, title:"Silman's Complete Endgame Course",   author:"Jeremy Silman",    level:"Intermediário", rating:"★ 4.8", color:"#c8dde8", emoji:"♜" },
+    { id:3, title:"How to Reassess Your Chess",         author:"Jeremy Silman",    level:"Intermediário", rating:"★ 4.7", color:"#d4e8c8", emoji:"♛" },
+    { id:4, title:"Chess Fundamentals",                 author:"José Capablanca",  level:"Iniciante",     rating:"★ 4.6", color:"#e8c8d4", emoji:"♞" },
+    { id:5, title:"Zurich 1953",                        author:"David Bronstein",  level:"Avançado",      rating:"★ 4.9", color:"#ddd4e8", emoji:"♝" },
+    { id:6, title:"Logical Chess: Move by Move",        author:"Irving Chernev",   level:"Iniciante",     rating:"★ 4.5", color:"#e8e0c8", emoji:"♚" },
+  ];
+
+  const MOCK_VIDEOS = [
+    { id:1, title:"Teoria das Aperturas: Defesa Siciliana",   channel:"Magnus Chess", duration:"45:22", views:"12K",  level:"Intermediário" },
+    { id:2, title:"Finais de Torre: Técnica de Lucena",       channel:"Chess Brasil", duration:"28:10", views:"8.4K", level:"Avançado"      },
+    { id:3, title:"Xeque-mate em 2: Padrões Clássicos",      channel:"ScholarMate",  duration:"15:44", views:"32K",  level:"Iniciante"     },
+    { id:4, title:"Estruturas de Peões — Isolado e Duplo",   channel:"Endgame Pro",  duration:"38:55", views:"6.1K", level:"Intermediário" },
+  ];
+
+  // ============================================================
+  // ESTADO
+  // ============================================================
+  let currentView = 'books';
+  let currentUser = { name: '', email: '' };
+
+  // ============================================================
+  // AUTH
+  // ============================================================
+  function switchTab(tab) {
+    document.getElementById('form-login').style.display    = tab === 'login'    ? 'block' : 'none';
+    document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+    document.getElementById('tab-login').classList.toggle('active',    tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  }
+
+  async function handleLogin() {
+    const email    = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+
+    if (!email || !password) { showToast('Preencha todos os campos'); return; }
+
+    // TODO: integrar com POST /api/v1/auth/login
+    // const res  = await fetch('/api/v1/auth/login', {
+    //   method:  'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body:    JSON.stringify({ email, password })
+    // });
+    // const data = await res.json();
+    // if (!res.ok) { showToast(data.message || 'Erro ao entrar'); return; }
+    // localStorage.setItem('token', data.token);
+    // currentUser = { name: data.name, email };
+
+    // Mock: extrai nome do e-mail enquanto a API não está ligada
+    currentUser = { name: email.split('@')[0], email };
+    enterApp();
+  }
+
+  async function handleRegister() {
+    const name     = document.getElementById('register-name').value.trim();
+    const email    = document.getElementById('register-email').value.trim();
+    const password = document.getElementById('register-password').value;
+
+    if (!name || !email || !password) { showToast('Preencha todos os campos'); return; }
+    if (password.length < 8)          { showToast('Senha muito curta (mín. 8 caracteres)'); return; }
+
+    // TODO: integrar com POST /api/v1/auth/register
+    // const res  = await fetch('/api/v1/auth/register', {
+    //   method:  'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body:    JSON.stringify({ name, email, password })
+    // });
+    // const data = await res.json();
+    // if (!res.ok) { showToast(data.message || 'Erro ao cadastrar'); return; }
+    // localStorage.setItem('token', data.token);
+    // currentUser = { name, email };
+
+    currentUser = { name, email };
+    enterApp();
+  }
+
+  function enterApp() {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app-screen').classList.add('visible');
+
+    const initials = currentUser.name
+      .split(' ')
+      .map(w => w[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+
+    document.getElementById('sidebar-avatar').textContent = initials;
+    document.getElementById('sidebar-name').textContent   = currentUser.name.split(' ')[0];
+
+    navigateTo('books');
+  }
+
+  // ============================================================
+  // ROTEAMENTO SPA
+  // ============================================================
+  function navigateTo(view) {
+    currentView = view;
+
+    // Atualiza nav ativa
+    document.querySelectorAll('.nav-item[id^="nav-"]').forEach(el => el.classList.remove('active'));
+    const navEl = document.getElementById('nav-' + view);
+    if (navEl) navEl.classList.add('active');
+
+    // Atualiza topbar
+    const titles    = { books: 'Livros', videos: 'Vídeos' };
+    const addLabels = { books: 'Adicionar livro', videos: 'Adicionar vídeo' };
+    document.getElementById('topbar-title').textContent = titles[view]    || view;
+    document.getElementById('add-label').textContent    = addLabels[view] || 'Adicionar';
+
+    // Renderiza view
+    if (view === 'books')  renderBooks();
+    if (view === 'videos') renderVideos();
+  }
+
+  // ============================================================
+  // VIEWS
+  // ============================================================
+
+  /**
+   * Renderiza a grade de livros.
+   * TODO: substituir MOCK_BOOKS por:
+   *   const token = localStorage.getItem('token');
+   *   const res   = await fetch('/api/v1/books', { headers: { 'Authorization': `Bearer ${token}` } });
+   *   const books = await res.json();
+   */
+  async function renderBooks() {
+    const books = MOCK_BOOKS; // <- trocar por fetch
+
+    const levelClass = (l) => l === 'Iniciante' ? '' : 'amber';
+
+    const cardsHtml = books.map(b => `
+      <div class="book-card" onclick="showToast('${b.title}')">
+        <div class="book-cover" style="background:${b.color}">
+          <div class="book-cover-pattern"></div>
+          <span style="font-size:44px;position:relative">${b.emoji}</span>
+        </div>
+        <div class="book-body">
+          <div class="book-title">${b.title}</div>
+          <div class="book-author">${b.author}</div>
+          <div class="book-meta">
+            <span class="tag ${levelClass(b.level)}">${b.level}</span>
+            <span class="book-rating">${b.rating}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('content-area').innerHTML = `
+      <div class="fade-in">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Total de livros</div>
+            <div class="stat-value">${books.length}</div>
+            <div class="stat-sub">na sua vault</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Lendo agora</div>
+            <div class="stat-value">2</div>
+            <div class="stat-sub">em progresso</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Concluídos</div>
+            <div class="stat-value">4</div>
+            <div class="stat-sub">este ano</div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <div>
+            <div class="section-title">Coleção <span class="badge-count">${books.length}</span></div>
+            <div class="section-subtitle">Seus livros de xadrez</div>
+          </div>
+        </div>
+
+        <div class="books-grid">${cardsHtml}</div>
+      </div>
+    `;
+  }
+
+  /**
+   * Renderiza a galeria de vídeos.
+   * TODO: substituir MOCK_VIDEOS por:
+   *   const token  = localStorage.getItem('token');
+   *   const res    = await fetch('/api/v1/videos', { headers: { 'Authorization': `Bearer ${token}` } });
+   *   const videos = await res.json();
+   */
+  async function renderVideos() {
+    const videos = MOCK_VIDEOS; // <- trocar por fetch
+
+    // Mini-tabuleiro CSS para thumbnail
+    const boardHtml = () => {
+      let cells = '';
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 8; c++) {
+          cells += `<div class="board-cell ${(r + c) % 2 === 0 ? 'light' : 'dark'}"></div>`;
+        }
+      }
+      return cells;
+    };
+
+    const cardsHtml = videos.map(v => `
+      <div class="video-card" onclick="showToast('${v.title}')">
+        <div class="video-thumb">
+          <div class="video-thumb-board">${boardHtml()}</div>
+          <div class="play-btn">▶</div>
+          <div class="video-duration">${v.duration}</div>
+        </div>
+        <div class="video-body">
+          <div class="video-title">${v.title}</div>
+          <div class="video-channel">🎬 ${v.channel}</div>
+          <div class="video-meta">
+            <span class="tag">${v.level}</span>
+            <span style="font-size:12px;color:var(--ink-faint);margin-left:auto">${v.views} views</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('content-area').innerHTML = `
+      <div class="fade-in">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Total de vídeos</div>
+            <div class="stat-value">${videos.length}</div>
+            <div class="stat-sub">salvos</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Assistidos</div>
+            <div class="stat-value">7</div>
+            <div class="stat-sub">este mês</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Horas estudadas</div>
+            <div class="stat-value">18h</div>
+            <div class="stat-sub">em vídeo</div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <div>
+            <div class="section-title">Vídeos <span class="badge-count">${videos.length}</span></div>
+            <div class="section-subtitle">Aulas e análises salvas</div>
+          </div>
+        </div>
+
+        <div class="videos-grid">${cardsHtml}</div>
+      </div>
+    `;
+  }
+
+  // ============================================================
+  // UTILITÁRIOS
+  // ============================================================
+  let toastTimer = null;
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('visible');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('visible'), 2200);
+  }
+</script>
+
+</body>
+</html>
