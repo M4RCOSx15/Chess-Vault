@@ -6,7 +6,7 @@
 
 const CONFIG = {
   // ========== API ========== 
-  API_BASE_URL:'http://localhost:8080/api/v1',
+  API_BASE_URL:'http://localhost:8080/api/usuario/v1',
   
   // Endpoints da API
   ENDPOINTS: {
@@ -21,7 +21,7 @@ const CONFIG = {
       UPDATE_PROFILE: '/users/me',
       GET_USER: '/users/:id',
     },
-    GAMES: {
+    /*GAMES: {
       LIST: '/games',
       CREATE: '/games',
       GET: '/games/:id',
@@ -39,7 +39,7 @@ const CONFIG = {
     },
     DASHBOARD: {
       GET: '/dashboard',
-    },
+    },*/
   },
 
   // ========== STORAGE ========== 
@@ -140,9 +140,9 @@ const CONFIG = {
   },
 
   // ========== DEBUG ========== 
-  DEBUG: process.env.NODE_ENV === 'development',
-  LOG_REQUESTS: process.env.NODE_ENV === 'development',
-  LOG_RESPONSES: process.env.NODE_ENV === 'development',
+  DEBUG: window.location.hostname === 'localhost',
+LOG_REQUESTS: window.location.hostname === 'localhost',
+LOG_RESPONSES: window.location.hostname === 'localhost',
 };
 
 // Função helper para construir URL de endpoint

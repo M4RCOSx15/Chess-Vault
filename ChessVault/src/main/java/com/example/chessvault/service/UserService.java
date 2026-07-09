@@ -1,30 +1,40 @@
 package com.example.chessvault.service;
 
+import com.example.chessvault.config.SecurityConfig;
+import com.example.chessvault.dto.UserRequestDTO;
 import com.example.chessvault.exception.ResourceNotFoundException;
 import com.example.chessvault.model.UserModel;
-import com.example.chessvault.repository.ChessRepository;
+import com.example.chessvault.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 @Service
 public class UserService {
     @Autowired
-    private final ChessRepository chessRepository;
+    private final UserRepository userRepository;
     private  UserModel userModel;
-
-    public UserService(ChessRepository chessRepository) {
-        this.chessRepository = chessRepository;
-
+    private final SecurityConfig securityConfig ;
+    public UserService(UserRepository userRepository, SecurityConfig securityConfig) {
+        this.userRepository = userRepository;
+        this.securityConfig = securityConfig;
     }
 
-    public void CriarUser(UserModel userModel){
-       chessRepository.save(userModel);
+    public String CriarUser(UserRequestDTO userDTO){
+       UserModel user = new UserModel();
+       String senhahash;
+       user.setNome(userDTO.getNome());
+       user.setEmail(userDTO.getEmail());
+       senhahash = securityConfig.SenhaHash1(userDTO.getSenha());
+       user.setSenha(senhahash);
+       userRepository.save(user);
+       return senhahash;
     }
 
    public ResponseEntity<UserModel> AtualizarUser(Long id){
-        UserModel usuarioAntigo = chessRepository.findById(id)
+        UserModel usuarioAntigo = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Não encontrado"));
         usuarioAntigo.setNome(userModel.getNome());
         usuarioAntigo.setEmail(userModel.getEmail());
@@ -34,13 +44,17 @@ public class UserService {
    }
 
    public UserModel LerId(Long id){
-       UserModel user = chessRepository.findById(id)
+       UserModel user = userRepository.findById(id)
                .orElseThrow(() -> new ResourceNotFoundException("###########################Não encontrado##########################"));
        return user;
    }
    public String DeletarUser(Long id){
-      chessRepository.deleteById(id);
+      userRepository.deleteById(id);
       return "Usuario deletado com sucesso";
+   }
+
+   public String Senhahash(String senha){
+       return securityConfig.SenhaHash1(senha);
    }
 
 

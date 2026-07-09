@@ -87,18 +87,18 @@ class ApiClient {
       }
 
       // Tratar erros da API
-      if (!response.ok) {
-        const errorMsg = data.message || CONFIG.MESSAGES.ERROR.SERVER_ERROR;
-        
-        // Se 401 (não autorizado), tentar renovar token
-        if (response.status === 401) {
-          await this.refreshToken();
-          // Retry a requisição original
-          return this.request(method, endpoint, options);
-        }
+     
+if (!response.ok) {
+  const errorMsg = data.message || CONFIG.MESSAGES.ERROR.SERVER_ERROR;
 
-        throw new ApiError(errorMsg, response.status, data);
-      }
+  if (response.status === 401) {
+    this.clearTokens();
+    showToast(CONFIG.MESSAGES.ERROR.TOKEN_EXPIRED, 'error');
+    showScreen('auth');
+  }
+
+  throw new ApiError(errorMsg, response.status, data);
+}
 
       return data;
     } catch (err) {
@@ -220,7 +220,6 @@ async function registerUser(name, email, password) {
 async function loginUser(email, password) {
   const data = await api.post(CONFIG.ENDPOINTS.AUTH.LOGIN, { email, password });
   api.setAccessToken(data.accessToken);
-  localStorage.setItem(CONFIG.STORAGE_KEYS.REFRESH_TOKEN, data.refreshToken);
   return data;
 }
 
@@ -228,12 +227,6 @@ async function loginUser(email, password) {
  * Logout
  */
 async function logoutUser() {
-  const refreshToken = localStorage.getItem(CONFIG.STORAGE_KEYS.REFRESH_TOKEN);
-  try {
-    await api.post(CONFIG.ENDPOINTS.AUTH.LOGOUT, { refreshToken });
-  } catch (err) {
-    log('Erro ao fazer logout na API', err);
-  }
   api.clearTokens();
 }
 

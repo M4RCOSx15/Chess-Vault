@@ -1,5 +1,7 @@
 package com.example.chessvault.controller;
 
+import com.example.chessvault.dto.UserRequestDTO;
+import com.example.chessvault.dto.UserResponseDTO;
 import com.example.chessvault.model.UserModel;
 import com.example.chessvault.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +19,9 @@ public class UserController {
     }
 
     @PostMapping("Criar")
-    public ResponseEntity<UserModel> CriarUsuario(@RequestBody UserModel userModel){
-        userService.CriarUser(userModel);
-        return ResponseEntity.ok(userModel);
+    public ResponseEntity<UserRequestDTO> CriarUsuario(@RequestBody UserRequestDTO userRequestDTO){
+        userService.CriarUser(userRequestDTO);
+        return ResponseEntity.ok(userRequestDTO);
     }
 
     @PutMapping("{id}")

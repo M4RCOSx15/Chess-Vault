@@ -6,7 +6,7 @@
 class AuthManager {
   constructor() {
     this.currentUser = null;
-    this.isAuthenticated = false;
+    this.isAuthenticated = true;
     this.listeners = [];
   }
 
@@ -33,39 +33,18 @@ class AuthManager {
   /**
    * Registrar novo usuário
    */
-  async register(name, email, password) {
-    try {
-      showToast('Criando conta...', 'info');
-      await registerUser(name, email, password);
-      showToast(CONFIG.MESSAGES.SUCCESS.REGISTER, 'success');
-      return true;
-    } catch (err) {
-      showToast(err.message, 'error');
-      return false;
-    }
-  }
+  async registerUser(name, email, password) {
+  return api.post(CONFIG.ENDPOINTS.AUTH.REGISTER, { nome: name, email, senha: password });
+}
 
   /**
    * Fazer login
    */
-  async login(email, password) {
-    try {
-      showToast('Autenticando...', 'info');
-      const data = await loginUser(email, password);
-      
-      // Carregar perfil do usuário
-      const profile = await getUserProfile();
-      this.currentUser = profile;
-      this.isAuthenticated = true;
-      this.notify();
-      
-      showToast(CONFIG.MESSAGES.SUCCESS.LOGIN, 'success');
-      return true;
-    } catch (err) {
-      showToast(err.message, 'error');
-      return false;
-    }
-  }
+  async loginUser(email, password) {
+  const data = await api.post(CONFIG.ENDPOINTS.AUTH.LOGIN, { email, senha: password });
+  api.setAccessToken(data.accessToken);
+  return data;
+}
 
   /**
    * Fazer logout
@@ -154,7 +133,7 @@ const auth = new AuthManager();
  * Handle do formulário de login
  */
 async function handleLoginSubmit(email, password) {
-  if (!isValidEmail(email)) {
+  /*if (!isValidEmail(email)) {
     showToast('Email inválido', 'error');
     return false;
   }
@@ -162,13 +141,13 @@ async function handleLoginSubmit(email, password) {
   if (!password || password.length < 6) {
     showToast('Senha deve ter pelo menos 6 caracteres', 'error');
     return false;
-  }
+  }*/
 
-  const success = await auth.login(email, password);
+  const success = await auth.loginUser(email, password);
   if (success) {
     // Redirecionar para dashboard
     showScreen('app');
-    loadDashboard();
+     loadDashboard(); 
   }
   return success;
 }
@@ -178,7 +157,7 @@ async function handleLoginSubmit(email, password) {
  */
 async function handleRegisterSubmit(name, email, password, confirmPassword) {
   // Validações
-  if (!name || name.length < 3) {
+  /*if (!name || name.length < 3) {
     showToast('Nome deve ter pelo menos 3 caracteres', 'error');
     return false;
   }
@@ -196,7 +175,7 @@ async function handleRegisterSubmit(name, email, password, confirmPassword) {
   if (password !== confirmPassword) {
     showToast('Senhas não coincidem', 'error');
     return false;
-  }
+  }*/
 
   const success = await auth.register(name, email, password);
   if (success) {
@@ -239,14 +218,14 @@ async function initAuth() {
   log('Inicializando autenticação...');
   const isAuthenticated = await auth.restoreSession();
   
-  if (isAuthenticated) {
+  /*if (isAuthenticated) {
     log('Sessão restaurada, usuário autenticado');
     showScreen('app');
     loadDashboard();
   } else {
     log('Nenhuma sessão ativa, mostrando tela de login');
     showScreen('auth');
-  }
+  }*/
 }
 
 /**
