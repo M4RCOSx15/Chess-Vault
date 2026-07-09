@@ -1,0 +1,17 @@
+# Java / Spring Boot
+target/
+.gradle/
+build/
+.settings/
+.classpath
+.project
+*.log
+
+# Front-end (caso use node)
+node_modules/
+dist/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
