@@ -4,27 +4,30 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
-
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-    public String SenhaHash1(String senha){
-
-        return encoder.encode(senha);
-    }
-
+public class SecurityConfig{
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(csrf -> csrf.disable()) // Desabilita proteção CSRF (necessário para APIs stateless)
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+    @Bean
+    SecurityFilterChain FilterChain (HttpSecurity http ) throws Exception{
+        http.
+                csrf(csfr -> csfr.disable())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/usuario/v1/Criar").permitAll() // Permite registro sem token
-                        .anyRequest().authenticated() // Exige autenticação para o resto
-                )
-                .build();
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/usuario/v1/Criar").permitAll()
+                        .anyRequest().authenticated());
+        return http.build();
     }
 }

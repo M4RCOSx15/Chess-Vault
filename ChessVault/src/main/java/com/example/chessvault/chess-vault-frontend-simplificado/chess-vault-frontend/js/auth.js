@@ -9,13 +9,13 @@ class AuthManager {
     this.currentUser = null;
   }
 
-  async register(name, email, password) {
+  async register(name, email, senha) {
     // TODO seu: confirme com o UserRequestDTO do backend se os nomes de campo
     // (nome, email, senha) batem exatamente com o que o Jackson espera.
     return api.post(CONFIG.ENDPOINTS.AUTH.REGISTER, { nome: name, email, senha: password });
   }
 
-  async login(email, password) {
+  async login(email, senha) {
     const data = await api.post(CONFIG.ENDPOINTS.AUTH.LOGIN, { email, senha: password });
     // TODO seu: o backend ainda não tem /auth/login implementado.
     // Quando implementar, decida: o JWT volta em `data.token` ou `data.accessToken`?

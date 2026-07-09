@@ -19,9 +19,8 @@ public class UserController {
     }
 
     @PostMapping("Criar")
-    public ResponseEntity<UserRequestDTO> CriarUsuario(@RequestBody UserRequestDTO userRequestDTO){
-        userService.CriarUser(userRequestDTO);
-        return ResponseEntity.ok(userRequestDTO);
+    public ResponseEntity<String> CriarUsuario(@RequestBody UserRequestDTO userRequestDTO){
+        return ResponseEntity.ok(userService.CriarUser(userRequestDTO));
     }
 
     @PutMapping("{id}")
