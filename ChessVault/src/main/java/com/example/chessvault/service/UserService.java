@@ -48,7 +48,7 @@ public class UserService {
 
    public UserModel LerId(Long id){
        UserModel user = userRepository.findById(id)
-               .orElseThrow(() -> new ResourceNotFoundException("###########################Não encontrado##########################"));
+               .orElseThrow(() -> new ResourceNotFoundException("Usuario não encontrado"));
        return user;
    }
    public String DeletarUser(Long id){
