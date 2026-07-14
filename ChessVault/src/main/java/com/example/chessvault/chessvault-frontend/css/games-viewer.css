@@ -1,0 +1,448 @@
+/* css/games-viewer.css - Tabuleiro de xadrez e controles */
+
+/* ========== VIEWER CONTAINER ========== */
+.game-viewer-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-2xl);
+  align-items: start;
+}
+
+.game-viewer-board {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.game-viewer-moves {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* ========== TABULEIRO ========== */
+#vboard {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0;
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 1;
+  background: var(--card);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  margin: 0 auto;
+}
+
+.vsq {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  font-size: 36px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--trans-normal);
+  position: relative;
+  user-select: none;
+  line-height: 1;
+}
+
+/* Cores do tabuleiro */
+.vsq.vl {
+  background: #f0d9b5;
+}
+
+.vsq.vd {
+  background: #baca44;
+}
+
+/* Estado: último movimento */
+.vsq.vlast {
+  background-color: #baca44 !important;
+}
+
+.vsq.vl.vlast {
+  background-color: #e6d66d !important;
+}
+
+/* Estado: selecionado */
+.vsq.vsel {
+  background-color: #7fc0ff !important;
+  box-shadow: inset 0 0 0 2px rgba(127, 192, 255, 0.5);
+}
+
+/* Estado: movimento legal */
+.vsq.vlegal {
+  position: relative;
+}
+
+.vsq.vlegal::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(127, 192, 255, 0.3);
+  pointer-events: none;
+}
+
+.vsq.vlegal.vhas::after {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(127, 192, 255, 0.6);
+  background: transparent;
+}
+
+/* Peças no tabuleiro */
+.vsq {
+  font-family: 'Segoe UI Symbol', 'Apple Color Emoji', sans-serif;
+}
+
+/* ========== COORDENADAS DO TABULEIRO ========== */
+.board-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+#vboard-ranks {
+  position: absolute;
+  left: -30px;
+  top: 0;
+  width: 28px;
+  height: 100%;
+  max-width: 500px;
+  display: grid;
+  grid-template-rows: repeat(8, 1fr);
+  gap: 0;
+  align-items: center;
+  justify-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  aspect-ratio: auto;
+}
+
+#vboard-files {
+  position: absolute;
+  left: 0;
+  bottom: -28px;
+  width: 100%;
+  max-width: 500px;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0;
+  align-items: center;
+  justify-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  height: 26px;
+}
+
+.vlab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ========== CONTROLES DO TABULEIRO ========== */
+.board-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-lg);
+}
+
+.btn-nav {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--trans-normal);
+  color: var(--ink);
+  font-size: 18px;
+}
+
+.btn-nav:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+.btn-nav:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--surface);
+}
+
+.btn-nav:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+#move-counter {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
+  color: var(--ink-muted);
+  min-width: 60px;
+  text-align: center;
+}
+
+/* ========== MOVIMENTOS TABLE ========== */
+.moves-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.moves-title {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  color: var(--ink);
+  margin: 0;
+}
+
+.moves-table-wrapper {
+  overflow-y: auto;
+  max-height: 400px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+#moves-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+
+#moves-table tr {
+  border-bottom: 1px solid var(--border);
+}
+
+#moves-table tr:last-child {
+  border-bottom: none;
+}
+
+.move-num {
+  width: 50px;
+  padding: 8px;
+  text-align: center;
+  font-weight: var(--fw-semibold);
+  color: var(--ink-muted);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+}
+
+.move-cell {
+  flex: 1;
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--trans-normal);
+  color: var(--ink);
+  font-weight: var(--fw-medium);
+}
+
+.move-cell:hover {
+  background: var(--surface-hover);
+  color: var(--cobalt);
+}
+
+.move-cell.active {
+  background: var(--cobalt-light);
+  color: var(--cobalt);
+  font-weight: var(--fw-bold);
+}
+
+/* ========== GAME INFO ========== */
+.game-info-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.game-info-title {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  color: var(--ink);
+  margin: 0;
+}
+
+.game-info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.game-info-item:last-child {
+  border-bottom: none;
+}
+
+.game-info-label {
+  font-size: var(--fs-sm);
+  color: var(--ink-muted);
+  font-weight: var(--fw-medium);
+}
+
+.game-info-value {
+  font-size: var(--fs-base);
+  color: var(--ink);
+  font-weight: var(--fw-semibold);
+}
+
+.game-info-players {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.player-info {
+  padding: var(--spacing-md);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid;
+}
+
+.player-white {
+  border-color: #f0d9b5;
+}
+
+.player-black {
+  border-color: #baca44;
+}
+
+.player-name {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  color: var(--ink);
+  margin-bottom: var(--spacing-sm);
+}
+
+.player-rating {
+  font-size: var(--fs-sm);
+  color: var(--ink-muted);
+}
+
+.player-result {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: var(--fw-bold);
+  margin-top: var(--spacing-sm);
+}
+
+.player-result.win {
+  background: #d4edda;
+  color: #155724;
+}
+
+.player-result.loss {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.player-result.draw {
+  background: #fff3cd;
+  color: #856404;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1200px) {
+  .game-viewer-container {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  #vboard {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .board-wrapper {
+    max-width: 100%;
+  }
+
+  #vboard {
+    max-width: 100%;
+  }
+
+  .moves-table-wrapper {
+    max-height: 300px;
+  }
+
+  .move-num {
+    width: 40px;
+    padding: 6px;
+  }
+
+  .move-cell {
+    padding: 6px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  #vboard {
+    max-width: 100%;
+  }
+
+  #vboard-ranks {
+    left: -20px;
+    width: 20px;
+  }
+
+  #vboard-files {
+    bottom: -22px;
+    height: 22px;
+  }
+
+  .vlab {
+    font-size: 10px;
+  }
+
+  .board-controls {
+    gap: var(--spacing-sm);
+  }
+
+  .btn-nav {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  #move-counter {
+    font-size: 12px;
+    min-width: 50px;
+  }
+
+  .moves-panel {
+    padding: var(--spacing-md);
+  }
+
+  .game-info-panel {
+    padding: var(--spacing-md);
+  }
+}
