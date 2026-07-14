@@ -1,6 +1,0 @@
-/* css/styles.css - Import principal (versão simplificada: só auth + home) */
-
-@import url('./variables.css');
-@import url('./base.css');
-@import url('./auth.css');
-@import url('./home.css');
