@@ -1,0 +1,74 @@
+/* css/styles.css - Arquivo principal que importa todos os CSS */
+
+/* Ordem de importação importa! */
+
+/* 1. Variáveis e custom properties */
+@import url('./variables.css');
+
+/* 2. Reset e estilos base */
+@import url('./base.css');
+
+/* 3. Layout principal */
+@import url('./layout.css');
+
+/* 4. Componentes reutilizáveis */
+@import url('./components.css');
+
+/* 5. Telas específicas */
+@import url('./auth.css');
+@import url('./games-list.css');
+@import url('./games-viewer.css');
+
+/* 6. Overlays e modais */
+@import url('./modals.css');
+
+/* ========== ADJUSTMENTS ========== */
+
+/* Ensure smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom focus-visible for better accessibility */
+:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
+}
+
+/* Disable outline for mouse users but keep for keyboard */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ========== PRINT STYLES ========== */
+@media print {
+  .sidebar,
+  .topbar,
+  .modal-overlay,
+  #toast,
+  .btn-icon,
+  .toolbar-actions {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+  }
+
+  .content-area {
+    padding: 0;
+  }
+
+  main {
+    flex: 1;
+  }
+
+  .games-table {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+
+  .games-table tr {
+    page-break-inside: avoid;
+  }
+}
