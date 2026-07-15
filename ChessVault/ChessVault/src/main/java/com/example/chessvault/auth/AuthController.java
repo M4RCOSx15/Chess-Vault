@@ -5,8 +5,7 @@ import com.example.chessvault.dto.LoginRequest;
 import com.example.chessvault.dto.RegisterRequest;
 import com.example.chessvault.security.JwtService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -20,12 +19,14 @@ public class AuthController {
     }
 
     @RequestMapping("/registrar")
-    public ResponseEntity<String> RegistrarUser(RegisterRequest registerRequest){
+    @PostMapping
+    public ResponseEntity<String> RegistrarUser(@RequestBody RegisterRequest registerRequest){
         authService.register(registerRequest);
         return ResponseEntity.ok("Usuario Criado");
     }
     @RequestMapping("/login")
-    public AuthResponse LoginUser(LoginRequest loginRequest){
+    @GetMapping
+    public AuthResponse LoginUser(@RequestBody LoginRequest loginRequest){
         return authService.login(loginRequest);
     }
 }

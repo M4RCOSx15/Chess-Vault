@@ -25,7 +25,7 @@ public class SecurityConfig{
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() //PERMIÇAO PARA ACESSO POR CONTA DAS CONFIGS DEFAULT DO SPRINGSECURITY
+                        .requestMatchers("/auth/**").permitAll() //PERMIÇAO PARA ACESSO POR CONTA DAS CONFIGS DEFAULT DO SPRINGSECURITY
                         .requestMatchers("/api/usuario/v1/Criar").permitAll()
                         .anyRequest().authenticated());
         return http.build();
