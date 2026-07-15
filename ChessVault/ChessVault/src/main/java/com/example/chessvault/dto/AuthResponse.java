@@ -6,7 +6,10 @@ public class AuthResponse {
     private String nome;
     private String email;
 
-    public AuthResponse() {
+    public AuthResponse(String token, String nome, String email) {
+        this.token = token;
+        this.nome = nome;
+        this.email = email;
     }
 
     public String getToken() {
@@ -19,5 +22,17 @@ public class AuthResponse {
 
     public String getEmail() {
         return email;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

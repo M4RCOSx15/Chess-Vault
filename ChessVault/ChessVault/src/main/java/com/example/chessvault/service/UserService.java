@@ -18,6 +18,7 @@ public class UserService {
     @Autowired
     private final UserRepository userRepository;
     private  UserModel userModel;
+    private String token;
     @Autowired
     private PasswordEncoder passwordEncoder;
     public UserService(UserRepository userRepository) {
