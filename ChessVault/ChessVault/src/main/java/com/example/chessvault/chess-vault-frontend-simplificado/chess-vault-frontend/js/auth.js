@@ -10,17 +10,14 @@ class AuthManager {
   }
 
   async register(name, email, senha) {
-    // TODO seu: confirme com o UserRequestDTO do backend se os nomes de campo
-    // (nome, email, senha) batem exatamente com o que o Jackson espera.
-    return api.post(CONFIG.ENDPOINTS.AUTH.REGISTER, { nome: name, email, senha: password });
+  
+    return api.post(CONFIG.ENDPOINTS.AUTH.REGISTER, { nome: name, email, senha: senha });
   }
 
   async login(email, senha) {
-    const data = await api.post(CONFIG.ENDPOINTS.AUTH.LOGIN, { email, senha: password });
-    // TODO seu: o backend ainda não tem /auth/login implementado.
-    // Quando implementar, decida: o JWT volta em `data.token` ou `data.accessToken`?
-    // Ajuste a linha abaixo para bater com o nome exato do campo do seu DTO de resposta.
-    api.setAccessToken(data.accessToken);
+    const data = await api.post(CONFIG.ENDPOINTS.AUTH.LOGIN, { email, senha: senha });
+  
+    api.setAccessToken(data.token);
     this.isAuthenticated = true;
     return data;
   }
@@ -40,14 +37,14 @@ const auth = new AuthManager();
 
 // ========== HANDLERS DE FORMULÁRIO ==========
 
-async function handleLoginSubmit(email, password) {
+async function handleLoginSubmit(email, senha) {
   if (!isValidEmail(email)) {
     showToast('Email inválido', 'error');
     return;
   }
 
   try {
-    await auth.login(email, password);
+    await auth.login(email,senha);
     showToast(CONFIG.MESSAGES.SUCCESS.LOGIN, 'success');
     document.getElementById('home-username').textContent = email;
     showScreen('app');

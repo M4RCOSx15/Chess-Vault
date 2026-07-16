@@ -9,6 +9,7 @@ function showScreen(screen) {
     appScreen.classList.remove('visible');
   } else if (screen === 'app') {
     authScreen.classList.add('hidden');
+    appScreen.classList.remove('hidden'); 
     appScreen.classList.add('visible');
   }
 }

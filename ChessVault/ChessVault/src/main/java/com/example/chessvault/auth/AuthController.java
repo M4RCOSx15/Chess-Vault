@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class AuthController {
 
     private final JwtService jwtService;
@@ -18,14 +19,14 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @RequestMapping("/registrar")
-    @PostMapping
+
+    @PostMapping("/registrar")
     public ResponseEntity<String> RegistrarUser(@RequestBody RegisterRequest registerRequest){
         authService.register(registerRequest);
         return ResponseEntity.ok("Usuario Criado");
     }
-    @RequestMapping("/login")
-    @GetMapping
+
+    @PostMapping("/login")
     public AuthResponse LoginUser(@RequestBody LoginRequest loginRequest){
         return authService.login(loginRequest);
     }
