@@ -15,11 +15,7 @@ public class VideoModel {
     private String nome;
 
 
-    public VideoModel(Long id, String url, String nome) {
-        this.id = id;
-        this.url = url;
-        this.nome = nome;
-    }
+    public VideoModel() {}
 
     public Long getId() {
         return id;

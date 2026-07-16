@@ -13,11 +13,11 @@ public class PartidasModel {
     private String PGN;//NOTAÇÃO DE PARTIDA(METADADOS) --> PESQUISAR COMO FUNCIONA E DE ONDE EXTRAIR
     @Column(name = "partida_nome", nullable = false)
     private String nome;
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private UserModel usuario;
 
-    public PartidasModel(Long id, String PGN, String nome) {
-        this.id = id;
-        this.PGN = PGN;
-        this.nome = nome;
+    public PartidasModel() {
     }
 
     public Long getId() {
@@ -42,5 +42,13 @@ public class PartidasModel {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public UserModel getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(UserModel usuario) {
+        this.usuario = usuario;
     }
 }
