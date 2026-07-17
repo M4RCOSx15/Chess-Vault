@@ -27,6 +27,7 @@ public class SecurityConfig{
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll() //PERMIÇAO PARA ACESSO POR CONTA DAS CONFIGS DEFAULT DO SPRINGSECURITY
                         .requestMatchers("/api/usuario/v1/Criar").permitAll()
+                        .requestMatchers("/partidas/**").permitAll()
                         .anyRequest().authenticated());
         return http.build();
     }
