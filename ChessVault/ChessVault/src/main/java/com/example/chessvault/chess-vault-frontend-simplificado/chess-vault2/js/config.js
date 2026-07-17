@@ -9,7 +9,7 @@ const CONFIG = {
 
   ENDPOINTS: {
     AUTH: {
-      REGISTER: '/auth/register',
+      REGISTER: '/auth/registrar',
       LOGIN: '/auth/login',
     },
     // ATENÇÃO: buscartodaspartidas hoje retorna TODAS as partidas de

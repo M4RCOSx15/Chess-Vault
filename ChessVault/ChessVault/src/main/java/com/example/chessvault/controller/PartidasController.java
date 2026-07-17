@@ -4,6 +4,7 @@ import com.example.chessvault.model.PartidasModel;
 import com.example.chessvault.service.PartidasService;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -17,8 +18,9 @@ public class PartidasController {
     }
 
     @PostMapping("/criarpartida")
-    public String CriarPartidas(@RequestBody PartidasModel partidasModel){
-        return partidasService.CriarPartida(partidasModel);
+    public String CriarPartidas(@RequestBody PartidasModel partidasModel, Principal principal){
+        String email = principal.getName();
+        return partidasService.CriarPartida(partidasModel,email);
     }
     @GetMapping("/buscarpartidas")
     public PartidasModel BuscarPartida(@RequestParam String nome){

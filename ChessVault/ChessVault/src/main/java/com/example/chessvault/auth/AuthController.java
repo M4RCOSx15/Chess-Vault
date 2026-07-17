@@ -14,6 +14,7 @@ public class AuthController {
 
     private final JwtService jwtService;
     private final AuthService authService;
+
     public AuthController(JwtService jwtService, AuthService authService) {
         this.jwtService = jwtService;
         this.authService = authService;
@@ -28,6 +29,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public AuthResponse LoginUser(@RequestBody LoginRequest loginRequest){
+
         return authService.login(loginRequest);
     }
 }

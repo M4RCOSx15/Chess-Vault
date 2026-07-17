@@ -7,6 +7,7 @@ import com.example.chessvault.exception.ResourceNotFoundException;
 import com.example.chessvault.model.UserModel;
 import com.example.chessvault.repository.UserRepository;
 import com.example.chessvault.security.JwtService;
+import com.example.chessvault.service.PartidasService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,11 +23,14 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+
+
     public AuthService(UserRepository userRepository,PasswordEncoder passwordEncoder,JwtService jwtService) {
 
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+
     }
 
     public void register(RegisterRequest registerdto) {
@@ -52,6 +56,8 @@ public class AuthService {
             throw new ResourceNotFoundException("Credenciais invalidas");
         }
         String token = jwtService.generateToken(usuario.getEmail());
+
+
        return new AuthResponse(token, usuario.getNome(),usuario.getEmail());
     }
 }
