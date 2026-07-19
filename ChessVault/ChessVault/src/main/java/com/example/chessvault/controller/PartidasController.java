@@ -19,8 +19,7 @@ public class PartidasController {
 
     @PostMapping("/criarpartida")
     public String CriarPartidas(@RequestBody PartidasModel partidasModel, Principal principal){
-        String email = principal.getName();
-        return partidasService.CriarPartida(partidasModel,email);
+        return partidasService.CriarPartida(partidasModel, principal.getName());
     }
     @GetMapping("/buscarpartidas")
     public PartidasModel BuscarPartida(@RequestParam String nome){

@@ -3,4 +3,6 @@
 @import url('./variables.css');
 @import url('./base.css');
 @import url('./auth.css');
-@import url('./home.css');
+@import url('./layout.css');
+@import url('./games-list.css');
+@import url('./games-viewer.css');

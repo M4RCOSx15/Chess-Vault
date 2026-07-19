@@ -1,0 +1,97 @@
+/* css/games-viewer.css - Tabuleiro interativo e navegação de lances */
+
+#viewer-section .viewer-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.viewer-back {
+  display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500;
+  color: var(--ink-muted); cursor: pointer; border: 1px solid var(--border);
+  background: transparent; padding: 6px 12px; border-radius: var(--radius-sm);
+  transition: all 0.15s; font-family: var(--font);
+}
+.viewer-back:hover { background: var(--surface-hover); color: var(--ink); }
+
+.viewer-game-title { font-size: 18px; font-weight: 700; color: var(--ink); }
+
+.viewer-layout { display: flex; gap: 2rem; flex-wrap: wrap; }
+
+.viewer-board-col { display: flex; flex-direction: column; align-items: center; gap: 12px; flex-shrink: 0; }
+
+#chess-board-wrap { display: flex; gap: 8px; align-items: center; }
+#vboard {
+  border: 3px solid #2a2a2a; display: grid; grid-template-columns: repeat(8, 1fr);
+  width: 400px; height: 400px;
+}
+.vsq {
+  width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 32px; line-height: 1; user-select: none; position: relative;
+  transition: background 0.12s;
+}
+.vl { background: #b8d4e8; }
+.vd { background: #4a7a9b; }
+.vsq.vsel { outline: 4px solid #f4d03f; outline-offset: -4px; }
+.vsq.vlegal::after {
+  content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%;
+  background: rgba(244,208,63,0.55); pointer-events: none;
+}
+.vsq.vlegal.vhas::after { display: none; }
+.vsq.vlegal.vhas { outline: 4px solid rgba(244,208,63,0.7); outline-offset: -4px; }
+.vl.vlast { background: #9fcba8 !important; }
+.vd.vlast { background: #5b9b6a !important; }
+
+#vboard-ranks { display: flex; flex-direction: column; justify-content: space-around; height: 400px; }
+#vboard-files { display: flex; justify-content: space-around; width: 400px; }
+.vlab { font-size: 11px; color: var(--ink-faint); font-weight: 500; width: 14px; text-align: center; }
+
+.viewer-controls { display: flex; align-items: center; gap: 6px; }
+.ctrl-btn {
+  width: 36px; height: 36px; border: 1px solid var(--border-strong); background: var(--card);
+  border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 14px; color: var(--ink-muted); transition: all 0.14s;
+}
+.ctrl-btn:hover { background: var(--surface-hover); color: var(--ink); }
+.ctrl-btn:disabled { opacity: 0.3; cursor: default; }
+#move-counter { font-size: 13px; color: var(--ink-muted); font-family: var(--mono); min-width: 60px; text-align: center; }
+
+.viewer-moves-col {
+  flex: 1; min-width: 260px; border-left: 1px solid var(--border);
+  padding-left: 2rem; display: flex; flex-direction: column;
+}
+.moves-panel-header {
+  font-size: 13px; font-weight: 600; color: var(--ink-muted);
+  letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1rem;
+}
+.moves-list { flex: 1; overflow-y: auto; max-height: 420px; }
+.moves-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 13px; }
+.moves-table td { padding: 5px 8px; border-radius: 4px; cursor: pointer; color: var(--ink-muted); }
+.moves-table td.move-num { color: var(--ink-faint); font-size: 12px; user-select: none; min-width: 28px; cursor: default; }
+.moves-table td.move-cell { font-weight: 500; color: var(--ink); }
+.moves-table td.move-cell:hover { background: var(--cobalt-light); color: var(--cobalt); }
+.moves-table td.move-cell.active { background: var(--cobalt); color: #fff; }
+
+@media (max-width: 640px) {
+  #vboard { width: 280px; height: 280px; }
+  .vsq { width: 35px; height: 35px; font-size: 22px; }
+  #vboard-ranks { height: 280px; }
+  #vboard-files { width: 280px; }
+  .viewer-layout { flex-direction: column; }
+  .viewer-moves-col { border-left: none; padding-left: 0; border-top: 1px solid var(--border); padding-top: 1rem; }
+}
+
+/* ========== BOTÃO DE DELETAR NO CARD ========== */
+.game-card {
+  position: relative;
+}
+.game-card-delete {
+  position: absolute; top: 10px; right: 10px;
+  width: 28px; height: 28px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--card);
+  color: var(--ink-muted); cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.game-card-delete:hover { background: var(--danger, #dc3545); color: #fff; border-color: var(--danger, #dc3545); }

@@ -119,13 +119,63 @@
       <section id="games-section" data-section-content style="display:none;">
         <div class="section-header">
           <h2 class="section-title">Minhas Partidas</h2>
+          <button id="new-game-btn" class="btn btn-primary">+ Nova Partida</button>
         </div>
         <div id="games-list">
           <!-- Carregado via API -->
         </div>
       </section>
+
+      <!-- Visualizador de Partida -->
+      <section id="viewer-section" data-section-content style="display:none;">
+        <div class="viewer-header">
+          <button class="viewer-back" id="viewer-back-btn">← Voltar para Partidas</button>
+          <div class="viewer-game-title" id="viewer-title">Partida</div>
+        </div>
+        <div class="viewer-layout">
+          <div class="viewer-board-col">
+            <div id="chess-board-wrap">
+              <div id="vboard-ranks"></div>
+              <div id="vboard"></div>
+            </div>
+            <div id="vboard-files"></div>
+            <div class="viewer-controls">
+              <button class="ctrl-btn" id="btn-start" title="Início">⏮</button>
+              <button class="ctrl-btn" id="btn-prev" title="Anterior">◀</button>
+              <span id="move-counter">0 / 0</span>
+              <button class="ctrl-btn" id="btn-next" title="Próximo">▶</button>
+              <button class="ctrl-btn" id="btn-end" title="Final">⏭</button>
+            </div>
+          </div>
+          <div class="viewer-moves-col">
+            <div class="moves-panel-header">Movimentos</div>
+            <div class="moves-list"><table class="moves-table" id="moves-table"></table></div>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
+</div>
+
+<!-- Modal: Nova Partida -->
+<div id="new-game-overlay" class="modal-overlay">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h2 class="modal-title">Nova Partida</h2>
+      <button class="modal-close" id="new-game-close">✕</button>
+    </div>
+    <form id="new-game-form" class="modal-body">
+      <div class="auth-field">
+        <label class="auth-label">Nome da Partida</label>
+        <input id="new-game-nome" type="text" class="auth-input" placeholder="Ex: Carlsen vs Nepo, Rd 6" required />
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">PGN</label>
+        <textarea id="new-game-pgn" class="auth-input" rows="6" placeholder="1. e4 e5 2. Nf3 ..." required></textarea>
+      </div>
+      <button type="submit" class="auth-submit">Salvar Partida</button>
+    </form>
+  </div>
 </div>
 
 <!-- Toast Notification -->
@@ -137,6 +187,8 @@
 <script src="js/ui.js"></script>
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/chess-engine.js"></script>
+<script src="js/games-viewer.js"></script>
 <script src="js/games.js"></script>
 <script src="js/main.js"></script>
 

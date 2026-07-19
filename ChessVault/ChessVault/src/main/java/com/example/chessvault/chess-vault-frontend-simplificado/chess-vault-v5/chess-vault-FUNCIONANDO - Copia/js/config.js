@@ -5,20 +5,21 @@ const CONFIG = {
   // Hoje o UserController está em /api/usuario/v1, mas login/registro
   // deveriam viver num AuthController separado (ver mentoria anterior).
   // Ajuste API_BASE_URL e os ENDPOINTS abaixo para bater com o que você criar.
-  API_BASE_URL: 'http://localhost:8080/auth',
+  API_BASE_URL: 'http://localhost:8080',
 
   ENDPOINTS: {
     AUTH: {
-      REGISTER: '/register',
-      LOGIN: '/login',
+      REGISTER: '/auth/registrar',
+      LOGIN: '/auth/login',
     },
-    // TODO seu: o backend hoje só tem /partidas/buscarpartidas (busca por
-    // nome exato) e /partidas/criarpartida. Falta um endpoint que devolva
-    // a LISTA de partidas do usuário logado (ex: GET /partidas/minhas).
-    // Ajuste esses paths quando criar esse endpoint.
+    // ATENÇÃO: buscartodaspartidas hoje retorna TODAS as partidas de
+    // TODOS os usuários (não filtra por dono, porque PartidasModel ainda
+    // não tem relação com UserModel). Funciona pra testar agora, mas
+    // ver o alerta de segurança que já te dei sobre isso.
     PARTIDAS: {
       LISTAR: '/partidas/buscartodaspartidas',
       CRIAR: '/partidas/criarpartida',
+      DELETAR: '/partidas/deletarpartidas',   // usado como /deletarpartidas/{id}
     },
   },
 

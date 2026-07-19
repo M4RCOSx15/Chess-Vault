@@ -34,7 +34,7 @@ function showSection(section) {
   const activeNav = document.querySelector(`[data-section="${section}"]`);
   if (activeNav) activeNav.classList.add('active');
 
-  const titles = { dashboard: 'Dashboard', games: 'Minhas Partidas' };
+  const titles = { dashboard: 'Dashboard', games: 'Minhas Partidas', viewer: 'Visualizador' };
   document.getElementById('topbar-title').textContent = titles[section] || '';
 }
 

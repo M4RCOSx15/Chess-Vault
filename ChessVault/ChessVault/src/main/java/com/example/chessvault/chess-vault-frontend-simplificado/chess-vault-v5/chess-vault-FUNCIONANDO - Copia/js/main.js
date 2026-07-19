@@ -39,6 +39,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Nova Partida
+  document.getElementById('new-game-btn').addEventListener('click', openNewGameModal);
+  document.getElementById('new-game-close').addEventListener('click', closeNewGameModal);
+  document.getElementById('new-game-overlay').addEventListener('click', (e) => {
+    if (e.target.id === 'new-game-overlay') closeNewGameModal();
+  });
+  document.getElementById('new-game-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nome = document.getElementById('new-game-nome').value;
+    const pgn = document.getElementById('new-game-pgn').value;
+    await handleNewGameSubmit(nome, pgn);
+  });
+
+  // Visualizador de partida
+  document.getElementById('viewer-back-btn').addEventListener('click', closeGameViewer);
+  document.getElementById('btn-start').addEventListener('click', () => goToMove(0));
+  document.getElementById('btn-prev').addEventListener('click', prevMove);
+  document.getElementById('btn-next').addEventListener('click', nextMove);
+  document.getElementById('btn-end').addEventListener('click', () => goToMove(-1));
+
   // Se já existe token salvo, pula direto pra home (sem validar contra o backend
   // ainda - isso é uma simplificação, não uma solução definitiva. Ver nota abaixo.)
   if (auth.isLoggedIn()) {

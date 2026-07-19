@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface PartidasRepository extends JpaRepository<PartidasModel,Long> {
 
     Optional<PartidasModel> findByNome(String nome);
-    boolean existsByNome(String nome);
+    boolean existsById(String nome);
 }

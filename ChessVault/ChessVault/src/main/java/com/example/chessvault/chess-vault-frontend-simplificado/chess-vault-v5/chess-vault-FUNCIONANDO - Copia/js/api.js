@@ -73,6 +73,7 @@ class ApiClient {
 
   get(endpoint) { return this.request('GET', endpoint); }
   post(endpoint, data) { return this.request('POST', endpoint, data); }
+  delete(endpoint) { return this.request('DELETE', endpoint); }
 }
 
 const api = new ApiClient();
