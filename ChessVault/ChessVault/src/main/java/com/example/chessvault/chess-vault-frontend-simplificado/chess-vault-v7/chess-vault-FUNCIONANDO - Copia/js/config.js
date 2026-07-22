@@ -19,7 +19,7 @@ const CONFIG = {
     PARTIDAS: {
       LISTAR: '/partidas/buscartodaspartidas',
       CRIAR: '/partidas/criarpartida',
-      DELETAR: '/partidas/deletarpartidas/',   // usado como /deletarpartidas/{id}
+      DELETAR: '/partidas/deletarpartidas',   // usado como /deletarpartidas/{id}
     },
   },
 

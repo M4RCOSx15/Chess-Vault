@@ -45,9 +45,9 @@ public class PartidasService {
     public List<PartidasModel> RetornarTodasPartidas(){
         return partidasRepository.findAll();
     }
-    public void DeletarPartida(String nome){
-        String nomeDb = nome.toLowerCase();
-        Long partidaId = partidasRepository.findByNome(nomeDb).get().getId();
-        partidasRepository.deleteById(partidaId);
+    public void DeletarPartida(Long id){
+
+
+        partidasRepository.deleteById(id);
     }
 }

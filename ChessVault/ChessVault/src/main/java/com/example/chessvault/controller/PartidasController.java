@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/partidas")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+
 public class PartidasController {
     private final PartidasService partidasService;
 
@@ -22,12 +22,12 @@ public class PartidasController {
         return partidasService.CriarPartida(partidasModel, principal.getName());
     }
     @GetMapping("/buscarpartidas")
-    public PartidasModel BuscarPartida(@RequestParam String nome){
+    public PartidasModel BuscarPartida(@PathVariable String nome){
        return partidasService.RetornarPartida(nome);
     }
     @DeleteMapping("deletarpartidas")
-    public void DeletarPartidas(@RequestParam String nome){
-        partidasService.DeletarPartida(nome);
+    public void DeletarPartidas(@PathVariable Long id){
+        partidasService.DeletarPartida(id);
     }
     @GetMapping("buscartodaspartidas")
     public List<PartidasModel> RetornarAll(){

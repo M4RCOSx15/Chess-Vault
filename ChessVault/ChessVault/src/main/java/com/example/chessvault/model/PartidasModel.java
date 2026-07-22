@@ -9,7 +9,7 @@ public class PartidasModel {
     @Column(name = "id_partidas", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "pgn_notacao", nullable = false)
+    @Column(name = "pgn_notacao", nullable = false, length = 600)
     private String PGN;//NOTAÇÃO DE PARTIDA(METADADOS) --> PESQUISAR COMO FUNCIONA E DE ONDE EXTRAIR
     @Column(name = "partida_nome", nullable = false)
     private String nome;
