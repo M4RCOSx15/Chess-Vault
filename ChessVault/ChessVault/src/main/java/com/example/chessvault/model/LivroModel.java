@@ -4,24 +4,26 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "Livros")
-public class BookModel {
+public class LivroModel {
 
     @Id
     @Column(name = "id_livro", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "nome_livro", nullable = false)
+    @Column(name = "nome_livro", nullable = false, length = 255)
     private String nome;
-    @Column(name = "descricao_livro", nullable = false)
+    @Column(name = "descricao_livro", nullable = false, length = 5000)
     private String descricao;
+    @Column(name = "imagem-opcional",length = 300)
+    private String imagemLivro;
 
-    public BookModel(Long id, String nome, String descricao) {
+    public LivroModel(Long id, String nome, String descricao) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
     }
 
-    public BookModel() {}
+    public LivroModel() {}
 
     public Long getId() {
         return id;
@@ -45,5 +47,13 @@ public class BookModel {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public String getImagemLivro() {
+        return imagemLivro;
+    }
+
+    public void setImagemLivro(String imagemLivro) {
+        this.imagemLivro = imagemLivro;
     }
 }
