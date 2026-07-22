@@ -1,10 +1,7 @@
 // js/config.js - Configurações e endpoints (versão mínima para login/registro)
 
 const CONFIG = {
-  // TODO (decisão sua): confirme com o backend qual vai ser o path real.
-  // Hoje o UserController está em /api/usuario/v1, mas login/registro
-  // deveriam viver num AuthController separado (ver mentoria anterior).
-  // Ajuste API_BASE_URL e os ENDPOINTS abaixo para bater com o que você criar.
+
   API_BASE_URL: 'http://localhost:8080',
 
   ENDPOINTS: {
@@ -19,7 +16,7 @@ const CONFIG = {
     PARTIDAS: {
       LISTAR: '/partidas/buscartodaspartidas',
       CRIAR: '/partidas/criarpartida',
-      DELETAR: '/partidas/deletarpartidas/',   // usado como /deletarpartidas/{id}
+      DELETAR: '/partidas/deletarpartidas',  
     },
   },
 

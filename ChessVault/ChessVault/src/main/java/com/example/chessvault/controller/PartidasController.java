@@ -25,11 +25,11 @@ public class PartidasController {
     public PartidasModel BuscarPartida(@PathVariable String nome){
        return partidasService.RetornarPartida(nome);
     }
-    @DeleteMapping("deletarpartidas")
+    @DeleteMapping("/deletarpartidas/{id}")
     public void DeletarPartidas(@PathVariable Long id){
         partidasService.DeletarPartida(id);
     }
-    @GetMapping("buscartodaspartidas")
+    @GetMapping("/buscartodaspartidas")
     public List<PartidasModel> RetornarAll(){
         return partidasService.RetornarTodasPartidas();
     }
