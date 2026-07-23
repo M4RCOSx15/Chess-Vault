@@ -7,8 +7,6 @@ import com.example.chessvault.repository.PartidasRepository;
 import com.example.chessvault.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -42,12 +40,10 @@ public class PartidasService {
         PartidasModel partida = partidasRepository.findByNome(nomeDb).orElseThrow(() -> new ResourceNotFoundException("Partida não encontrada"));
         return partida;
     }
-    public List<PartidasModel> RetornarTodasPartidas(){
-        return partidasRepository.findAll();
+    public List<PartidasModel> RetornarTodasPartidas(String email){
+        return partidasRepository.findByUsuario_Email(email);
     }
     public void DeletarPartida(Long id){
-
-
         partidasRepository.deleteById(id);
     }
 }

@@ -30,7 +30,7 @@ public class PartidasController {
         partidasService.DeletarPartida(id);
     }
     @GetMapping("/buscartodaspartidas")
-    public List<PartidasModel> RetornarAll(){
-        return partidasService.RetornarTodasPartidas();
+    public List<PartidasModel> RetornarAll(Principal principal){
+        return partidasService.RetornarTodasPartidas(principal.getName());
     }
 }

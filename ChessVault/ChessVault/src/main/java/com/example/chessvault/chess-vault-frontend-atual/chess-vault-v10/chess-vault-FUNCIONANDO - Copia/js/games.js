@@ -4,9 +4,15 @@ async function loadGamesList() {
   const container = document.getElementById('games-list');
   const statEl = document.getElementById('stat-total-games');
 
+  // IMPORTANTE: limpar a tela ANTES do await, não depois. Sem isso,
+  // o HTML do usuário anterior (ou da seção anterior) continua visível
+  // durante toda a espera da requisição — e se o backend demorar
+  // (ex: "cold start" do Render acordando de hibernação), esse dado
+  // antigo/errado fica na tela por vários segundos.
+  container.innerHTML = `<p style="color: var(--ink-muted); font-size: 13px;">Carregando partidas...</p>`;
+  if (statEl) statEl.textContent = '—';
+
   try {
-    // TODO seu: isso só funciona depois de criar o endpoint que lista
-    // TODAS as partidas do usuário logado (ver TODO no config.js).
     const partidas = await api.get(CONFIG.ENDPOINTS.PARTIDAS.LISTAR);
 
     if (statEl) statEl.textContent = partidas.length;

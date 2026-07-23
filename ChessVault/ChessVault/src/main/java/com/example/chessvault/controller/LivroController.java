@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -19,8 +20,8 @@ public class LivroController {
     }
 
     @PutMapping("/criarlivro")
-    public ResponseEntity<String> CriarLivro(@RequestBody LivroModel livroModel){
-        return ResponseEntity.ok(livroService.CriarLivro(livroModel));
+    public ResponseEntity<String> CriarLivro(@RequestBody LivroModel livroModel, Principal principal){
+        return ResponseEntity.ok(livroService.CriarLivro(livroModel, principal.getName()));
     }
     @DeleteMapping("/deletarlivro/{id}")
     public ResponseEntity<HttpStatus> DeletarLivro(@PathVariable Long id){
@@ -28,7 +29,7 @@ public class LivroController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
     @GetMapping("/buscartodoslivros")
-    public List<LivroModel> RetornarAll(){
-        return livroService.RetornarTodosLivros();
+    public List<LivroModel> RetornarAll(Principal principal){
+        return livroService.RetornarTodosLivros(principal.getName());
     }
 }

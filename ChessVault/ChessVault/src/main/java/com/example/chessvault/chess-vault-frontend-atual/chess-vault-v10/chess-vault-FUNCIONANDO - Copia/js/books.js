@@ -3,18 +3,6 @@
 // ============================================================
 // GOOGLE BOOKS API (busca externa)
 // ============================================================
-
-// ATENÇÃO — leia antes de subir esse projeto pro GitHub público:
-// Qualquer coisa em código JavaScript que roda no navegador é
-// VISÍVEL para qualquer pessoa (Ctrl+U, "ver código-fonte"). Isso
-// inclui essa chave de API. Diferente da SecretKey do JWT (que fica
-// só no servidor), essa chave está exposta por natureza — não tem
-// como "esconder" segredo em código que roda no cliente.
-// Para essa API pública específica (Google Books, só leitura, sem
-// dados sensíveis por trás dela), isso é um risco baixo — o pior que
-// alguém faria é usar sua cota de requisições. Mas a REGRA GERAL vale
-// guardar: chaves de API com custo financeiro ou acesso a dados
-// privados NUNCA devem ir para código de frontend.
 const GOOGLE_BOOKS_API_KEY = "AIzaSyAFkK_m0XcOVLMDEnEDu1YiMeuy5OT86Ww";
 
 /**
@@ -96,6 +84,10 @@ let livrosCarregados = [];
 async function loadBooksList() {
   const container = document.getElementById('books-list');
   const statEl = document.getElementById('stat-total-books');
+
+  // IMPORTANTE: limpar a tela ANTES do await, seguindo o mesmo padrão do loadGamesList
+  container.innerHTML = `<p style="color: var(--ink-muted); font-size: 13px;">Carregando livros...</p>`;
+  if (statEl) statEl.textContent = '—';
 
   try {
     livrosCarregados = await api.get('/livro/buscartodoslivros');

@@ -10,7 +10,7 @@ public class PartidasModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "pgn_notacao", nullable = false, length = 600)
-    private String PGN;//NOTAÇÃO DE PARTIDA(METADADOS) --> PESQUISAR COMO FUNCIONA E DE ONDE EXTRAIR
+    private String PGN;
     @Column(name = "partida_nome", nullable = false)
     private String nome;
     @ManyToOne
@@ -51,4 +51,5 @@ public class PartidasModel {
     public void setUsuario(UserModel usuario) {
         this.usuario = usuario;
     }
+
 }

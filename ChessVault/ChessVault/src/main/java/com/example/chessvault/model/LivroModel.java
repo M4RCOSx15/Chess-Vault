@@ -16,11 +16,15 @@ public class LivroModel {
     private String descricao;
     @Column(name = "imagem-opcional",length = 300)
     private String imagemLivro;
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private UserModel usuario;
 
-    public LivroModel(Long id, String nome, String descricao) {
+    public LivroModel(Long id, String nome, String descricao, UserModel usuario) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
+        this.usuario = usuario;
     }
 
     public LivroModel() {}
@@ -55,5 +59,13 @@ public class LivroModel {
 
     public void setImagemLivro(String imagemLivro) {
         this.imagemLivro = imagemLivro;
+    }
+
+    public UserModel getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(UserModel usuario) {
+        this.usuario = usuario;
     }
 }
