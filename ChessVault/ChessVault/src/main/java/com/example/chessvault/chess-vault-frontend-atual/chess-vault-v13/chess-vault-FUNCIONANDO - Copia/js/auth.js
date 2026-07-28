@@ -48,7 +48,8 @@ async function handleLoginSubmit(email, senha) {
     document.getElementById('user-avatar').textContent = nome.charAt(0).toUpperCase();
 
     showScreen('app');
-    showSection('dashboard');
+    showSection('jogadores');
+    loadJogadoresList();
   } catch (err) {
     error('Erro no login', err);
     showToast(err.message, 'error');
@@ -81,5 +82,14 @@ async function handleRegisterSubmit(name, email, senha, confirmSenha) {
 
 function handleLogout() {
   auth.logout();
+  // Limpa qualquer dado em memória do usuário anterior (não só o
+  // localStorage). Sem isso, se algum código ler essas variáveis antes
+  // da próxima lista carregar, ainda veria o usuário errado.
+  if (typeof livrosCarregados !== 'undefined') livrosCarregados = [];
+  if (typeof ultimosResultadosBusca !== 'undefined') ultimosResultadosBusca = [];
+  if (typeof jogadoresCarregados !== 'undefined') jogadoresCarregados = [];
+  document.getElementById('games-list').innerHTML = '';
+  document.getElementById('books-list').innerHTML = '';
+  document.getElementById('jogadores-list').innerHTML = '';
   showScreen('auth');
 }

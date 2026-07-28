@@ -35,10 +35,28 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       showSection(section);
+      if (section === 'jogadores') loadJogadoresList();
       if (section === 'games') loadGamesList();
       if (section === 'books') loadBooksList();
     });
   });
+
+  // Jogadores
+  document.getElementById('add-player-btn').addEventListener('click', openNewPlayerModal);
+  document.getElementById('new-player-close').addEventListener('click', closeNewPlayerModal);
+  document.getElementById('new-player-overlay').addEventListener('click', (e) => {
+    if (e.target.id === 'new-player-overlay') closeNewPlayerModal();
+  });
+  document.getElementById('new-player-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await handleNewPlayerSubmit({
+      nome: document.getElementById('new-player-nome').value,
+      rating: document.getElementById('new-player-rating').value,
+      descricao: document.getElementById('new-player-descricao').value,
+      aberturas: document.getElementById('new-player-aberturas').value,
+    });
+  });
+  document.getElementById('player-detail-back-btn').addEventListener('click', closePlayerDetail);
 
   // Nova Partida
   document.getElementById('new-game-btn').addEventListener('click', openNewGameModal);
@@ -80,7 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // ainda - isso é uma simplificação, não uma solução definitiva. Ver nota abaixo.)
   if (auth.isLoggedIn()) {
     showScreen('app');
-    showSection('dashboard');
+    showSection('jogadores');
+    loadJogadoresList();
   } else {
     showScreen('auth');
   }
