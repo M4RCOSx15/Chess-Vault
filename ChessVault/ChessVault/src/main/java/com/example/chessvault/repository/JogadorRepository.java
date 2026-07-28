@@ -1,11 +1,13 @@
 package com.example.chessvault.repository;
 
 import com.example.chessvault.model.JogadorModel;
+import com.example.chessvault.model.LivroModel;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
-
+@Repository
 public interface JogadorRepository extends JpaRepository<JogadorModel, Long> {
-
-    Optional<JogadorModel> findById(Long id);
+    List<JogadorModel> findByUsuario_Email(String email);
 }

@@ -2,6 +2,8 @@ package com.example.chessvault.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "Jogador")
 public class JogadorModel {
@@ -14,18 +16,18 @@ public class JogadorModel {
     private Long rating;
     @Column(name = "descricao", nullable = false)
     private String descricao;
-    @ManyToOne()
-    @JoinColumn(name = "id-partidas", nullable = false)
-    private PartidasModel partidasModel;
-    @Column(name = "aberturas-favoritas")
+    @Column(name = "aberturas_favoritas")
     private String aberturasFav;
-    public JogadorModel(Long id, String nome, Long rating, String descricao, PartidasModel partidasModel, String aberturasFav) {
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private UserModel usuario;
+    public JogadorModel(Long id, String nome, Long rating, String descricao,String aberturasFav, UserModel usuario) {
         this.id = id;
         this.nome = nome;
         this.rating = rating;
         this.descricao = descricao;
-        this.partidasModel = partidasModel;
         this.aberturasFav = aberturasFav;
+        this.usuario = usuario;
     }
 
     public JogadorModel() {}
@@ -62,19 +64,19 @@ public class JogadorModel {
         this.descricao = descricao;
     }
 
-    public PartidasModel getPartidasModel() {
-        return partidasModel;
-    }
-
-    public void setPartidasModel(PartidasModel partidasModel) {
-        this.partidasModel = partidasModel;
-    }
-
     public String getAberturasFav() {
         return aberturasFav;
     }
 
     public void setAberturasFav(String aberturasFav) {
         this.aberturasFav = aberturasFav;
+    }
+
+    public UserModel getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(UserModel usuario) {
+        this.usuario = usuario;
     }
 }

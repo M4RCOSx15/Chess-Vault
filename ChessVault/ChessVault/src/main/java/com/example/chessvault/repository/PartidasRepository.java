@@ -13,4 +13,6 @@ public interface PartidasRepository extends JpaRepository<PartidasModel,Long> {
 
     Optional<PartidasModel> findByNome(String nome);
     List<PartidasModel> findByUsuario_Email(String email);
+    Optional<PartidasModel> findById(Long aLong);
+    List<PartidasModel> findByJogador1_IdOrJogador2_Id(Long jogador1Id, Long jogador2Id);
 }
