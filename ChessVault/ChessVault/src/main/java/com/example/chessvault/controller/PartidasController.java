@@ -41,7 +41,7 @@ public class PartidasController {
     }
 
     @PutMapping("/desvincularjogador/{partidaId}/{jogadorId}")
-    public void DesvincularJogador(Long partidaId, Long jogadorId){
+    public void DesvincularJogador(@PathVariable Long partidaId, @PathVariable Long jogadorId){
        partidasService.DesvincularJogador(partidaId,jogadorId);
     }
 
