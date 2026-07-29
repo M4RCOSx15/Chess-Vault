@@ -18,12 +18,14 @@ import java.util.List;
 public class JogadorService {
     private final JogadorRepository jogadorRepository;
     private final PartidasRepository partidasRepository;
+    private final PartidasService partidasService;
     private UserModel usermodel;
     private final UserRepository userRepository;
-    public JogadorService(JogadorRepository jogadorRepository, UserRepository userRepository,PartidasRepository partidasRepository) {
+    public JogadorService(JogadorRepository jogadorRepository, UserRepository userRepository,PartidasRepository partidasRepository,PartidasService partidasService) {
         this.jogadorRepository = jogadorRepository;
         this.userRepository = userRepository;
         this.partidasRepository=partidasRepository;
+        this.partidasService= partidasService;
     }
    @Transactional
     public String CriarJogador(JogadorModel jogadorModel, String email){ //AQUI RECEBE TODOS OS DADOS MAIS O EMAIL PARA VINCULAR TAL JOGADOR A TAL CONTA DE USUARIO
@@ -39,8 +41,10 @@ public class JogadorService {
     }
 
 
-    public void DeletarJogador(Long id){
-        jogadorRepository.deleteById(id);
+    public void DeletarJogador(Long partidaId, Long jogadorId){
+
+        partidasService.DesvincularJogador(partidaId, jogadorId);
+        jogadorRepository.deleteById(jogadorId);
     }
 
 

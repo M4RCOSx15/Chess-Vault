@@ -11,6 +11,10 @@ function iconeDoJogador(nome) {
 // Guardamos em memória os jogadores carregados (pra abrir detalhe sem
 // buscar de novo) — seguindo o mesmo padrão de livrosCarregados.
 let jogadoresCarregados = [];
+// Guarda as partidas vinculadas ao jogador atualmente aberto na tela
+// de detalhes — precisamos do id de uma delas pra deletar o jogador,
+// já que o endpoint agora exige desvincular da chave estrangeira primeiro.
+let partidasVinculadasAtual = [];
 
 async function loadJogadoresList() {
   const container = document.getElementById('jogadores-list');
@@ -143,9 +147,11 @@ async function carregarPartidasDoJogador(jogadorId) {
 
   try {
     const partidas = await api.get(`/partidas/buscarpartidasdojogador/${jogadorId}`);
+    partidasVinculadasAtual = partidas || [];
     renderPlayerLinkedGames(partidas, jogadorId);
   } catch (err) {
     error('Erro ao carregar partidas do jogador', err);
+    partidasVinculadasAtual = [];
     container.innerHTML = `<p style="color: var(--ink-muted); font-size: 13px;">Não foi possível carregar as partidas vinculadas.</p>`;
   }
 }
@@ -234,11 +240,21 @@ function closePlayerDetail() {
 }
 
 async function handleDeletePlayer(id) {
+  // O backend exige desvincular da chave estrangeira antes de deletar
+  // — por isso precisa do id de uma partida vinculada. Usamos a
+  // primeira da lista que já carregamos na tela de detalhes.
+  const partida = partidasVinculadasAtual[0];
+
+  if (!partida) {
+    showToast('Este jogador não tem partida vinculada para desvincular — confira com o backend se é possível deletar sem isso.', 'error');
+    return;
+  }
+
   const confirmado = confirm('Remover este jogador? Essa ação não pode ser desfeita.');
   if (!confirmado) return;
 
   try {
-    await api.delete(`/jogador/deletarjogador/${partidaId}/${id}`);
+    await api.delete(`/jogador/deletarjogador/${partida.id}/${id}`);
     showToast('Jogador removido.', 'success');
     closePlayerDetail();
     await loadJogadoresList();

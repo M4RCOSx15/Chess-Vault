@@ -21,9 +21,9 @@ public class JogadorController {
     public String CriarJogador(@RequestBody JogadorModel jogadorModel,Principal principal){
         return jogadorService.CriarJogador(jogadorModel,principal.getName());
     }
-    @DeleteMapping("/deletarjogador/{id}")
-    public void DeletarJogador(@PathVariable Long id){
-        jogadorService.DeletarJogador(id);
+    @DeleteMapping("/deletarjogador/{partidaId}/{id}")
+    public void DeletarJogador(@PathVariable Long partidaId, @PathVariable Long id){
+        jogadorService.DeletarJogador(partidaId,id);
     }
     @PutMapping("/atualizarjogador/{id}")
     public ResponseEntity<JogadorModel> AtualizarJogador(@PathVariable Long id, @RequestBody JogadorModel jogadorModel){
@@ -33,8 +33,4 @@ public class JogadorController {
     public List<JogadorModel> RetornarAll(Principal principal){
         return jogadorService.RetornarTodosJogadores(principal.getName());
     }
-
-
-
-
 }
