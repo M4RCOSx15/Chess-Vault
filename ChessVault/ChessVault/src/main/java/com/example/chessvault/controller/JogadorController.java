@@ -1,3 +1,11 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// BACKEND — JogadorController.java CORRIGIDO
+//
+// O endpoint de deletar agora só precisa do jogadorId.
+// Antes era: DELETE /jogador/deletarjogador/{partidaId}/{jogadorId}
+// Agora é:   DELETE /jogador/deletarjogador/{jogadorId}
+// ─────────────────────────────────────────────────────────────────────────────
+
 package com.example.chessvault.controller;
 
 import com.example.chessvault.model.JogadorModel;
@@ -10,27 +18,41 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/jogador")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = {"http://127.0.0.1:5500", "http://localhost:5500"})
 public class JogadorController {
+
     private final JogadorService jogadorService;
 
     public JogadorController(JogadorService jogadorService) {
         this.jogadorService = jogadorService;
     }
+
     @PostMapping("/criarjogador")
-    public String CriarJogador(@RequestBody JogadorModel jogadorModel,Principal principal){
-        return jogadorService.CriarJogador(jogadorModel,principal.getName());
+    public String CriarJogador(@RequestBody JogadorModel jogadorModel, Principal principal) {
+        return jogadorService.CriarJogador(jogadorModel, principal.getName());
     }
-    @DeleteMapping("/deletarjogador/{partidaId}/{id}")
-    public void DeletarJogador(@PathVariable Long partidaId, @PathVariable Long id){
-        jogadorService.DeletarJogador(partidaId,id);
+
+    /**
+     * ENDPOINT CORRIGIDO
+     * Antes: DELETE /deletarjogador/{partidaId}/{jogadorId}
+     * Agora: DELETE /deletarjogador/{jogadorId}
+     *
+     * O service cuida de desvincular todas as partidas automaticamente.
+     */
+    @DeleteMapping("/deletarjogador/{jogadorId}")
+    public void DeletarJogador(@PathVariable Long jogadorId) {
+        jogadorService.DeletarJogador(jogadorId);
     }
+
     @PutMapping("/atualizarjogador/{id}")
-    public ResponseEntity<JogadorModel> AtualizarJogador(@PathVariable Long id, @RequestBody JogadorModel jogadorModel){
-       return jogadorService.AtualizarJogador(id, jogadorModel);
+    public ResponseEntity<JogadorModel> AtualizarJogador(
+            @PathVariable Long id,
+            @RequestBody JogadorModel jogadorModel) {
+        return jogadorService.AtualizarJogador(id, jogadorModel);
     }
+
     @GetMapping("/buscartodosjogadores")
-    public List<JogadorModel> RetornarAll(Principal principal){
+    public List<JogadorModel> RetornarTodosJogadores(Principal principal) {
         return jogadorService.RetornarTodosJogadores(principal.getName());
     }
 }
