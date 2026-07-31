@@ -18,16 +18,19 @@ public class JogadorModel {
     private String descricao;
     @Column(name = "aberturas_favoritas")
     private String aberturasFav;
+    @Column(name = "imagem-opcional",length = 300)
+    private String imagemJogador;
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private UserModel usuario;
-    public JogadorModel(Long id, String nome, Long rating, String descricao,String aberturasFav, UserModel usuario) {
+    public JogadorModel(Long id, String nome, Long rating, String descricao,String aberturasFav, UserModel usuario, String imagemJogador) {
         this.id = id;
         this.nome = nome;
         this.rating = rating;
         this.descricao = descricao;
         this.aberturasFav = aberturasFav;
         this.usuario = usuario;
+        this.imagemJogador = imagemJogador;
     }
 
     public JogadorModel() {}
@@ -78,5 +81,13 @@ public class JogadorModel {
 
     public void setUsuario(UserModel usuario) {
         this.usuario = usuario;
+    }
+
+    public String getImagemJogador() {
+        return imagemJogador;
+    }
+
+    public void setImagemJogador(String imagemJogador) {
+        this.imagemJogador = imagemJogador;
     }
 }

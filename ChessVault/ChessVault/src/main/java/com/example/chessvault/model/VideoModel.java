@@ -11,33 +11,12 @@ public class VideoModel {
     private Long id;
     @Column(name = "url_video")
     private String url;
-    @Column(name = "nome")
-    private String nome;
+    @Column(name = "titulo")
+    private String titulo;
+    private String Tumbnail;
+    private String canal;
 
 
     public VideoModel() {}
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
 }

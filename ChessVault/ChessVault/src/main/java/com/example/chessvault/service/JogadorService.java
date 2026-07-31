@@ -16,52 +16,78 @@ import java.util.List;
 
 @Service
 public class JogadorService {
+
     private final JogadorRepository jogadorRepository;
     private final PartidasRepository partidasRepository;
     private final PartidasService partidasService;
     private UserModel usermodel;
     private final UserRepository userRepository;
-    public JogadorService(JogadorRepository jogadorRepository, UserRepository userRepository,PartidasRepository partidasRepository,PartidasService partidasService) {
-        this.jogadorRepository = jogadorRepository;
-        this.userRepository = userRepository;
-        this.partidasRepository=partidasRepository;
-        this.partidasService= partidasService;
+
+    public JogadorService(JogadorRepository jogadorRepository,
+                          UserRepository userRepository,
+                          PartidasRepository partidasRepository,
+                          PartidasService partidasService) {
+        this.jogadorRepository  = jogadorRepository;
+        this.userRepository     = userRepository;
+        this.partidasRepository = partidasRepository;
+        this.partidasService    = partidasService;
     }
-   @Transactional
-    public String CriarJogador(JogadorModel jogadorModel, String email){ //AQUI RECEBE TODOS OS DADOS MAIS O EMAIL PARA VINCULAR TAL JOGADOR A TAL CONTA DE USUARIO
-        JogadorModel jogador = new JogadorModel(); //CRIA UMA INSTANCIA PRA RECEBER AS INFORMAÇÕES DO JOGADOR
-        jogador.setNome(jogadorModel.getNome());//NOME
-        jogador.setDescricao(jogadorModel.getDescricao());//DESCRIÇÃO DO JOGADOR
-        jogador.setAberturasFav(jogadorModel.getAberturasFav());//ABERTURA FAVORITA
-        jogador.setRating(jogadorModel.getRating());//RATING
-        usermodel = userRepository.findByEmail(email).orElseThrow(()-> new ResourceNotFoundException("Usuario nao encontrado"));
+
+    @Transactional
+    public String CriarJogador(JogadorModel jogadorModel, String email) {
+        JogadorModel jogador = new JogadorModel();
+        jogador.setNome(jogadorModel.getNome());
+        jogador.setDescricao(jogadorModel.getDescricao());
+        jogador.setAberturasFav(jogadorModel.getAberturasFav());
+        jogador.setRating(jogadorModel.getRating());
+        jogador.setImagemJogador(jogadorModel.getImagemJogador());
+        usermodel = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
         jogador.setUsuario(usermodel);
         jogadorRepository.save(jogador);
-        return "Jogador Salvo com sucesso";
+        return "Jogador salvo com sucesso";
     }
 
+    /**
+     * Deleta o jogador sem precisar que o frontend passe um partidaId.
+     *
+     * O método agora:
+     *   1. Busca todas as partidas vinculadas ao jogador (onde ele é jogador1 OU jogador2).
+     *   2. Desvincular cada uma delas.
+     *   3. Deleta o jogador.
+     *
+     * Isso resolve o bug onde o frontend bloqueava a exclusão quando
+     * o jogador não tinha partidas vinculadas.
+     */
+    @Transactional
+    public void DeletarJogador(Long jogadorId) {
+        JogadorModel jogador = jogadorRepository.findById(jogadorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Jogador não encontrado"));
 
-    public void DeletarJogador(Long partidaId, Long jogadorId){
+        // Busca partidas onde o jogador aparece como jogador1 ou jogador2
+        List<PartidasModel> partidasVinculadas = partidasRepository
+                .findByJogador1IdOrJogador2Id(jogadorId, jogadorId);
 
-        partidasService.DesvincularJogador(partidaId, jogadorId);
+        // Desvincular cada uma antes de deletar (respeita FK constraints)
+        for (PartidasModel partida : partidasVinculadas) {
+            partidasService.DesvincularJogador(partida.getId(), jogadorId);
+        }
+
         jogadorRepository.deleteById(jogadorId);
     }
 
-
-    public ResponseEntity<JogadorModel> AtualizarJogador(Long id, JogadorModel jogadorModel){
-        JogadorModel jogadorAntigo = jogadorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Jogador não encontrado"));
+    public ResponseEntity<JogadorModel> AtualizarJogador(Long id, JogadorModel jogadorModel) {
+        JogadorModel jogadorAntigo = jogadorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Jogador não encontrado"));
         jogadorAntigo.setNome(jogadorModel.getNome());
         jogadorAntigo.setDescricao(jogadorModel.getDescricao());
         jogadorAntigo.setRating(jogadorModel.getRating());
         jogadorAntigo.setAberturasFav(jogadorModel.getAberturasFav());
-
+        jogadorAntigo.setImagemJogador(jogadorModel.getImagemJogador());
         return ResponseEntity.ok(jogadorAntigo);
     }
 
-    public List<JogadorModel> RetornarTodosJogadores(String email){
+    public List<JogadorModel> RetornarTodosJogadores(String email) {
         return jogadorRepository.findByUsuario_Email(email);
     }
-
-
-
 }
