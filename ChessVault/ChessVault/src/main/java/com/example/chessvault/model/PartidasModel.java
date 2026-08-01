@@ -9,7 +9,7 @@
         @Column(name = "id_partidas", nullable = false)
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
-        @Column(name = "pgn_notacao", nullable = false, length = 600)
+        @Column(name = "pgn_notacao", nullable = false, length = 4000)
         private String PGN;
         @Column(name = "partida_nome", nullable = false)
         private String nome;
