@@ -211,14 +211,13 @@ async function handleNewGameSubmitComVinculo(nome, pgn) {
   if (!nome.trim()) { showToast('Dê um nome para a partida.', 'error'); return; }
   if (!pgn.trim())  { showToast('Cole o PGN da partida.', 'error'); return; }
 
-  // Validação de PGN colado sem espaços (replicada de games.js)
-  if (/[1-8](?=[a-hKQRBNO])/.test(pgn)) {
-    showToast('O PGN parece estar sem espaços entre os lances. Adicione os espaços e tente novamente.', 'error');
-    return;
-  }
+  // Auto-corrige PGN colado adicionando um espaço após o ponto da jogada
+  // Ex: transforma "1.e4 e5 2.Nf3" em "1. e4 e5 2. Nf3"
+  let pgnFormatado = pgn.replace(/(\d+\.)([^\s])/g, '$1 $2');
 
   try {
-    const novaPartida = await api.post(CONFIG.ENDPOINTS.PARTIDAS.CRIAR, { nome, PGN: pgn });
+    // Note que agora enviamos a variável pgnFormatado
+    const novaPartida = await api.post(CONFIG.ENDPOINTS.PARTIDAS.CRIAR, { nome, PGN: pgnFormatado });
 
     // Se veio de um card de jogador, vincula automaticamente
     if (jogadorDetalheAtual && novaPartida && novaPartida.id) {
