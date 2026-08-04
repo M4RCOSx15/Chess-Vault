@@ -36,7 +36,7 @@ async function loadVideosList() {
       <div class="video-tile" onclick="window.open('${v.url}', '_blank')">
         <button class="video-tile-delete" title="Remover" onclick="event.stopPropagation(); handleDeleteVideo(${v.id})">🗑</button>
         <div class="video-tile-thumb">
-          ${v.thumbnail ? `<img src="${v.thumbnail}" alt="${v.titulo}">` : '🎬'}
+          ${(v.thumbnail || v.tumbnail || v.Thumbnail) ? `<img src="${v.thumbnail || v.tumbnail || v.Thumbnail}" alt="${v.titulo}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'"><span style="display:none;font-size:32px;">🎬</span>` : '<span style="font-size:32px;">🎬</span>'}
         </div>
         <div class="video-tile-info">
           <div class="video-tile-title">${v.titulo || 'Sem título'}</div>
@@ -110,12 +110,16 @@ async function handlePickVideo(index) {
   if (!v) return;
 
   try {
+    // Note o "tumbnail" sem H aqui — é o nome que o VideoRequestDTO
+    // do backend realmente espera (ver aviso no topo do arquivo).
+    // O VideoRequestDTO usa @JsonProperty("Thumbnail") com T maiúsculo
+    // É isso que o Jackson lê no @RequestBody — qualquer outro nome vira null no banco
     await api.post('/videos/salvarvideo', {
-      url: v.url,
-      titulo: v.titulo,
-      thumbnail: v.thumbnail,
-      canal: v.canal,
-      idVideo: v.videoId,
+      url:       v.url,
+      titulo:    v.titulo,
+      Thumbnail: v.thumbnail,   // ← T MAIÚSCULO: casa com @JsonProperty("Thumbnail")
+      canal:     v.canal,
+      idVideo:   v.videoId,
     });
     showToast('Vídeo salvo com sucesso!', 'success');
     closeVideoSearchModal();

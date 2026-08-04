@@ -32,11 +32,11 @@ async function loadVideosList() {
       return;
     }
 
-    container.innerHTML = `<div class="videos-grid">${videosCarregados.map(v => `
-      <div class="video-tile" onclick="window.open('${v.url}', '_blank')">
+    container.innerHTML = `<div class="videos-grid">${videosCarregados.map((v, i) => `
+      <div class="video-tile" onclick="openVideoPlayerModal(${i})">
         <button class="video-tile-delete" title="Remover" onclick="event.stopPropagation(); handleDeleteVideo(${v.id})">🗑</button>
         <div class="video-tile-thumb">
-          ${v.thumbnail ? `<img src="${v.thumbnail}" alt="${v.titulo}">` : '🎬'}
+          ${(v.thumbnail || v.tumbnail || v.Thumbnail) ? `<img src="${v.thumbnail || v.tumbnail || v.Thumbnail}" alt="${v.titulo}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'"><span style="display:none;font-size:32px;">🎬</span>` : '<span style="font-size:32px;">🎬</span>'}
         </div>
         <div class="video-tile-info">
           <div class="video-tile-title">${v.titulo || 'Sem título'}</div>
@@ -84,6 +84,7 @@ async function handleVideoSearchSubmit(termo) {
   }
 }
 
+
 function renderVideoSearchResults(videos) {
   const container = document.getElementById('video-search-results');
 
@@ -110,12 +111,16 @@ async function handlePickVideo(index) {
   if (!v) return;
 
   try {
+    // Note o "tumbnail" sem H aqui — é o nome que o VideoRequestDTO
+    // do backend realmente espera (ver aviso no topo do arquivo).
+    // O VideoRequestDTO usa @JsonProperty("Thumbnail") com T maiúsculo
+    // É isso que o Jackson lê no @RequestBody — qualquer outro nome vira null no banco
     await api.post('/videos/salvarvideo', {
-      url: v.url,
-      titulo: v.titulo,
-      thumbnail: v.thumbnail,
-      canal: v.canal,
-      idVideo: v.videoId,
+      url:       v.url,
+      titulo:    v.titulo,
+      Thumbnail: v.thumbnail,   // ← T MAIÚSCULO: casa com @JsonProperty("Thumbnail")
+      canal:     v.canal,
+      idVideo:   v.videoId,
     });
     showToast('Vídeo salvo com sucesso!', 'success');
     closeVideoSearchModal();
@@ -138,4 +143,53 @@ async function handleDeleteVideo(id) {
     error('Erro ao remover vídeo', err);
     showToast(err.message, 'error');
   }
+}
+
+// ============================================================
+// PLAYER (modal com <iframe> — assiste dentro do Chess Vault,
+// sem window.open/redirect para o YouTube)
+// ============================================================
+
+// O id do vídeo pode vir com nomes diferentes dependendo de onde o
+// registro foi criado (mesma inconsistência de "thumbnail"/"tumbnail"
+// documentada no topo do arquivo), então tentamos todas as variações
+// antes de cair para extrair o id direto da URL salva.
+function _extrairYoutubeId(v) {
+  const direto = v.idVideo || v.IdVideo || v.videoId || v.VideoId;
+  if (direto) return direto;
+
+  const url = v.url || '';
+  const padroes = [
+    /(?:youtube\.com\/watch\?v=|youtube\.com\/embed\/|youtu\.be\/)([\w-]{11})/,
+  ];
+  for (const re of padroes) {
+    const m = url.match(re);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+function openVideoPlayerModal(index) {
+  const v = videosCarregados[index];
+  if (!v) return;
+
+  const id = _extrairYoutubeId(v);
+  const iframe = document.getElementById('video-player-iframe');
+  const titleEl = document.getElementById('video-player-title');
+
+  if (!id) {
+    showToast('Não foi possível identificar o vídeo do YouTube.', 'error');
+    return;
+  }
+
+  titleEl.textContent = v.titulo || 'Vídeo';
+  // autoplay=1 pra já começar a tocar ao abrir o modal
+  iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+  document.getElementById('video-player-overlay').classList.add('visible');
+}
+
+function closeVideoPlayerModal() {
+  // Zera o src (não só esconde o modal) pra parar o vídeo/áudio ao fechar
+  document.getElementById('video-player-iframe').src = '';
+  document.getElementById('video-player-overlay').classList.remove('visible');
 }
