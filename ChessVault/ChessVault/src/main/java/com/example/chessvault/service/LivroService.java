@@ -5,6 +5,7 @@ import com.example.chessvault.model.LivroModel;
 import com.example.chessvault.model.UserModel;
 import com.example.chessvault.repository.LivroRepository;
 import com.example.chessvault.repository.UserRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 
@@ -35,7 +36,7 @@ public class LivroService {
     public void DeletarLivro(Long id){
         livroRepository.deleteById(id);
     }
-
+    @Cacheable(value = "LivroCache", unless = "#result == null")
     public List<LivroModel> RetornarTodosLivros(String email){
 
         return livroRepository.findByUsuario_Email(email);

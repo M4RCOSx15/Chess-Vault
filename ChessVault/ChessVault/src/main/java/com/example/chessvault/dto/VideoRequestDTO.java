@@ -1,70 +1,40 @@
 package com.example.chessvault.dto;
-
-import jakarta.persistence.Column;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 public class VideoRequestDTO {
 
-    private Long id;
     private String url;
     private String titulo;
-    private String Tumbnail;
+    @JsonProperty("Thumbnail") // @JsonProperty garante que o Jackson leia "Thumbnail" (maiúsculo) do JSON
+    private String thumbnail;
     private String canal;
     private String idVideo;
 
-    public VideoRequestDTO(Long id, String url, String titulo, String tumbnail, String canal, String idVideo) {
-        this.id = id;
-        this.url = url;
-        this.titulo = titulo;
-        Tumbnail = tumbnail;
-        this.canal = canal;
-        this.idVideo = idVideo;
+    public VideoRequestDTO() {}
+
+    public VideoRequestDTO(String url, String titulo, String thumbnail, String canal, String idVideo) {
+        this.url       = url;
+        this.titulo    = titulo;
+        this.thumbnail = thumbnail;
+        this.canal     = canal;
+        this.idVideo   = idVideo;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public String getUrl()              { return url; }
+    public void   setUrl(String url)    { this.url = url; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getTitulo()              { return titulo; }
+    public void   setTitulo(String titulo) { this.titulo = titulo; }
 
-    public String getUrl() {
-        return url;
-    }
+    // Getter/setter com nome limpo — o @JsonProperty cuida do mapeamento JSON
+    public String getThumbnail()                { return thumbnail; }
+    public void   setThumbnail(String thumbnail){ this.thumbnail = thumbnail; }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+    // Alias para retrocompatibilidade com código legado que chamava getTumbnail()
+    public String getTumbnail() { return thumbnail; }
 
-    public String getTitulo() {
-        return titulo;
-    }
+    public String getCanal()              { return canal; }
+    public void   setCanal(String canal)  { this.canal = canal; }
 
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public String getTumbnail() {
-        return Tumbnail;
-    }
-
-    public void setTumbnail(String tumbnail) {
-        Tumbnail = tumbnail;
-    }
-
-    public String getCanal() {
-        return canal;
-    }
-
-    public void setCanal(String canal) {
-        this.canal = canal;
-    }
-
-    public String getIdVideo() {
-        return idVideo;
-    }
-
-    public void setIdVideo(String idVideo) {
-        this.idVideo = idVideo;
-    }
+    public String getIdVideo()               { return idVideo; }
+    public void   setIdVideo(String idVideo) { this.idVideo = idVideo; }
 }

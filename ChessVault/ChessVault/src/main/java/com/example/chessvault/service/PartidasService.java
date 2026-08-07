@@ -7,6 +7,7 @@ import com.example.chessvault.model.UserModel;
 import com.example.chessvault.repository.JogadorRepository;
 import com.example.chessvault.repository.PartidasRepository;
 import com.example.chessvault.repository.UserRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -137,7 +138,7 @@ public class PartidasService {
     public List<PartidasModel> BuscarPartidasDoJogador(Long jogadorId){
         return partidasRepository.findByJogador1_IdOrJogador2_Id(jogadorId, jogadorId);
     }
-
+    @Cacheable(value = "PartidasCache", unless = "#result == null")
     public List<PartidasModel> RetornarTodasPartidas(String email){
         return partidasRepository.findByUsuario_Email(email);
     }

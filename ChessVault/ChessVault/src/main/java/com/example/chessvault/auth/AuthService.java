@@ -10,6 +10,7 @@ import com.example.chessvault.security.JwtService;
 import com.example.chessvault.service.PartidasService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

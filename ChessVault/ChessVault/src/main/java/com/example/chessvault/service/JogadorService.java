@@ -8,6 +8,7 @@ import com.example.chessvault.repository.JogadorRepository;
 import com.example.chessvault.repository.PartidasRepository;
 import com.example.chessvault.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -35,16 +36,19 @@ public class JogadorService {
 
     @Transactional
     public String CriarJogador(JogadorModel jogadorModel, String email) {
+
+
         JogadorModel jogador = new JogadorModel();
         jogador.setNome(jogadorModel.getNome());
         jogador.setDescricao(jogadorModel.getDescricao());
         jogador.setAberturasFav(jogadorModel.getAberturasFav());
         jogador.setRating(jogadorModel.getRating());
         jogador.setImagemJogador(jogadorModel.getImagemJogador());
-        usermodel = userRepository.findByEmail(email)
+        UserModel usuario = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
-        jogador.setUsuario(usermodel);
+        jogador.setUsuario(usuario);
         jogadorRepository.save(jogador);
+
         return "Jogador salvo com sucesso";
     }
 
@@ -61,6 +65,7 @@ public class JogadorService {
      */
     @Transactional
     public void DeletarJogador(Long jogadorId) {
+
         JogadorModel jogador = jogadorRepository.findById(jogadorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Jogador não encontrado"));
 
@@ -86,8 +91,9 @@ public class JogadorService {
         jogadorAntigo.setImagemJogador(jogadorModel.getImagemJogador());
         return ResponseEntity.ok(jogadorAntigo);
     }
-
+    @Cacheable(value = "JogadorCache", unless = "#result == null")
     public List<JogadorModel> RetornarTodosJogadores(String email) {
+        System.out.println("======> BUSCANDO JOGADORES NO BANCO DE DADOS (CACHE MISS) <======");
         return jogadorRepository.findByUsuario_Email(email);
     }
 }

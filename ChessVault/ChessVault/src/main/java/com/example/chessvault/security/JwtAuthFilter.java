@@ -17,11 +17,11 @@ import java.util.Collections;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserRepository userRepository;
+    private final UserLookupService userLookupService;
 
-    public JwtAuthFilter(JwtService jwtService, UserRepository userRepository) {
+    public JwtAuthFilter(JwtService jwtService, UserLookupService userLookupService) {
         this.jwtService = jwtService;
-        this.userRepository = userRepository;
+        this.userLookupService =userLookupService;
     }
 
     @Override
@@ -37,7 +37,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 String email = jwtService.extractEmail(token);
 
                 // Confirma que o usuário do token ainda existe no banco
-                userRepository.findByEmail(email).ifPresent(usuario -> {
+               userLookupService.buscarPorEmail(email).ifPresent(usuario -> {
                     var authentication = new UsernamePasswordAuthenticationToken(
                             email, null, Collections.emptyList()
                     );

@@ -10,6 +10,7 @@ package com.example.chessvault.controller;
 
 import com.example.chessvault.model.JogadorModel;
 import com.example.chessvault.service.JogadorService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

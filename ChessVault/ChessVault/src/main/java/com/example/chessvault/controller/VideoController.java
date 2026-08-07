@@ -4,6 +4,7 @@ import com.example.chessvault.dto.VideoRequestDTO;
 import com.example.chessvault.dto.VideoSearchResultDTO;
 import com.example.chessvault.model.VideoModel;
 import com.example.chessvault.service.VideoService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,7 @@ public class VideoController {
         videoService.DeletarVideo(id);
     }
     @GetMapping("/buscartodosvideos")
+    @Cacheable("retornartodosvideos")
     public List<VideoModel> RetornatTodosVideos(){
         return videoService.RetornarTodosVideos();
     }

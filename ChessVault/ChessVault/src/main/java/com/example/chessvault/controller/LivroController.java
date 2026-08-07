@@ -2,6 +2,7 @@ package com.example.chessvault.controller;
 
 import com.example.chessvault.model.LivroModel;
 import com.example.chessvault.service.LivroService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,7 @@ public class LivroController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
     @GetMapping("/buscartodoslivros")
+    @Cacheable("retornartodoslivros")
     public List<LivroModel> RetornarAll(Principal principal){
         return livroService.RetornarTodosLivros(principal.getName());
     }

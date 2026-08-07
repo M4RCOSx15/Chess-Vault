@@ -13,8 +13,8 @@ public class VideoModel {
     private String url;
     @Column(name = "titulo")
     private String titulo;
-    @Column(name = "tubnail")
-    private String Tumbnail;
+    @Column(name = "thumbnail")
+    private String thumbnail;
     @Column(name = "canal")
     private String canal;
     @Column(name = "id_video")
@@ -23,11 +23,11 @@ public class VideoModel {
 
     public VideoModel() {}
 
-    public VideoModel(Long id, String url, String titulo, String tumbnail, String canal, String idVideo) {
+    public VideoModel(Long id, String url, String titulo, String thumbnail, String canal, String idVideo) {
         this.id = id;
         this.url = url;
         this.titulo = titulo;
-        Tumbnail = tumbnail;
+        this.thumbnail = thumbnail;
         this.canal = canal;
         this.idVideo = idVideo;
     }
@@ -53,12 +53,12 @@ public class VideoModel {
         this.titulo = titulo;
     }
 
-    public String getTumbnail() {
-        return Tumbnail;
+    public String getThumbnail() {
+        return thumbnail;
     }
 
-    public void setTumbnail(String tumbnail) {
-        Tumbnail = tumbnail;
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
     }
 
     public String getCanal() {
