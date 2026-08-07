@@ -1,23 +1,19 @@
-# Chess Vault ♟️
+# Chess Vault 
 
-Eu sou o Marcos, e tenho um problema: toda vez que vejo uma partida incrível, seja uma vitória que custou minha sanidade mental ou um jogo histórico entre grandes mestres, eu não tenho onde guardar isso direito. Pasta no desktop? Anotação no celular? Um favorito perdido no navegador? Não, obrigado.
+Eu sou o Marcos, eu tinha um problema: sempre que eu analisava uma boa partida , um jogo incrível entre o Fischer e o Tal ou até uma partida minha, eu não tinha onde guardar.
 
-Foi daí que nasceu o Chess Vault — minha biblioteca pessoal de partidas de xadrez. Simples assim.
+Foi daí que pensei no Chess Vault — minha biblioteca pessoal de partidas de xadrez onde eu (e voce) podemos desfrutar desse esporte que é o xadrez.
 
-## 🎯 O que é isso aqui
-
-Um lugar centralizado pra você armazenar, organizar e revisar as partidas que você não quer esquecer. Pode ser aquela partida sofrida sua, pode ser um clássico do Tal , pode ser qualquer coisa. O ponto é: vai estar aqui quando você precisar.
 
 ## 🔮 O que está vindo por aí
+Após concluir a V3 da aplicação , já possui algumas funcionalidades interessantes como : seção de livros(conectada à API do google books), jogadores(API do chess com, tendo a possibilidade de extrair informações direto da plataforma do chesscom), partidas, puzzle(API do chess , sendo possivel resolver o do dia ou aleatorio) e videos (API do Youtube-- é possivel vizualizar a maioria dos videos que não possuem o embed bloqueado pela aplicação)
 
-Tô trabalhando numa funcionalidade que vai conectar automaticamente a partida selecionada a vídeos no YouTube, independente do idioma. A ideia é transformar o vault num ambiente de estudo de verdade, não só um arquivo.
-
-## 💻 Stack
+## Stack
 
 - **Backend:** Java com Spring Boot
 - **Frontend:** HTML5, CSS3 e JavaScript
 
-## 💻 Lógica do projeto
+## Lógica do projeto
 
   Análise do Fluxo do Backend do ChessVault
 
@@ -34,7 +30,7 @@ BCryptPasswordEncoder para hash seguro de senhas
 
 Fluxo de Autenticação
 
-AuthController: Endpoints REST (/api/auth/register, /api/auth/login)
+AuthController: Endpoints REST (/api/auth/registrar, /api/auth/login)
 AuthService: Lógica de negócios
 Registro: Valida a unicidade do e-mail, codifica a senha e salva o usuário com a função ROLE_USER
 Login: Verifica as credenciais usando o codificador de senha
@@ -71,11 +67,4 @@ Fluxo de Dados
 
 7. Controlador → Resposta HTTP (saída formatada)
 
-Principais decisões de design
-Arquitetura em camadas com clara separação de responsabilidades
-Tratamento de erros padronizado via GlobalExceptionHandler
-Chaves primárias UUID para segurança distribuída
-Padrão Builder para construção de entidades
-Lombok para reduzir código repetitivo
-Padrões de resposta de API consistentes entre os módulos
 
