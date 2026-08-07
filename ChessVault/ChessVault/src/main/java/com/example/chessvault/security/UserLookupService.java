@@ -18,7 +18,6 @@ public class UserLookupService {
 
     @Cacheable(value = "UsuarioPorEmailCache", key = "#email", unless = "#result == null")
     public Optional<UserModel> buscarPorEmail(String email) {
-        System.out.println("======> BUSCANDO USUARIO NO BANCO (CACHE MISS) <======");
         return userRepository.findByEmail(email);
     }
 }

@@ -93,7 +93,6 @@ public class JogadorService {
     }
     @Cacheable(value = "JogadorCache", unless = "#result == null")
     public List<JogadorModel> RetornarTodosJogadores(String email) {
-        System.out.println("======> BUSCANDO JOGADORES NO BANCO DE DADOS (CACHE MISS) <======");
         return jogadorRepository.findByUsuario_Email(email);
     }
 }
