@@ -5,6 +5,8 @@ import com.example.chessvault.service.PuzzleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/puzzles")
 @CrossOrigin(origins = {"http://127.0.0.1:5500", "http://localhost:5500"})
@@ -17,14 +19,14 @@ public class PuzzleController {
     }
 
     @GetMapping("/diario")
-    public ResponseEntity<PuzzleModel> getPuzzleDiario() {
-        PuzzleModel puzzle = puzzleService.buscarESalvarPuzzleDoDia();
+    public ResponseEntity<PuzzleModel> getPuzzleDiario(Principal principal) {
+        PuzzleModel puzzle = puzzleService.buscarESalvarPuzzleDoDia(principal.getName());
         return ResponseEntity.ok(puzzle);
     }
 
     @GetMapping("/aleatorio")
-    public ResponseEntity<PuzzleModel> getPuzzleAleatorio() {
-        PuzzleModel puzzle = puzzleService.buscarESalvarPuzzleAleatorio();
+    public ResponseEntity<PuzzleModel> getPuzzleAleatorio(Principal principal) {
+        PuzzleModel puzzle = puzzleService.buscarESalvarPuzzleAleatorio(principal.getName());
         return ResponseEntity.ok(puzzle);
     }
 }

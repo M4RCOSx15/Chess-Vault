@@ -9,13 +9,13 @@
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "puzzle_id")
         private Long id;
-        @Column(name = "titulo")
+        @Column(name = "titulo",length = 500)
         private String title;
-        @Column(name = "url")
+        @Column(name = "url", length = 700)
         private String url;
-        @Column(name = "fen")
+        @Column(name = "fen", length = 600)
         private String fen;
-        @Column(name = "pgn")
+        @Column(name = "pgn", length = 600)
         private String pgn;
         @Column(name = "imagem")
         private String image;

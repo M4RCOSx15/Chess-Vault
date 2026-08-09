@@ -2,7 +2,6 @@ package com.example.chessvault.controller;
 
 import com.example.chessvault.model.PartidasModel;
 import com.example.chessvault.service.PartidasService;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,12 +29,11 @@ public class PartidasController {
     }
 
     @DeleteMapping("/deletarpartidas/{id}")
-    public void DeletarPartidas(@PathVariable Long id){
-        partidasService.DeletarPartida(id);
+    public void DeletarPartidas(@PathVariable Long id,Principal principal){
+        partidasService.DeletarPartida(id,principal.getName());
     }
 
     @GetMapping("/buscartodaspartidas")
-    @Cacheable("retornartodaspartidas")
     public List<PartidasModel> RetornarAll(Principal principal){
         return partidasService.RetornarTodasPartidas(principal.getName());
     }
@@ -47,5 +45,5 @@ public class PartidasController {
     public void DesvincularJogador(@PathVariable Long partidaId, @PathVariable Long jogadorId){partidasService.DesvincularJogador(partidaId,jogadorId);}
 
     @GetMapping("/buscarpartidasdojogador/{jogadorId}")
-    public List<PartidasModel> BuscarPartidasDoJogador(@PathVariable Long jogadorId){return partidasService.BuscarPartidasDoJogador(jogadorId);}
+    public List<PartidasModel> BuscarPartidasDoJogador(@PathVariable Long jogadorId,Principal principal){return partidasService.BuscarPartidasDoJogador(jogadorId, principal.getName());}
 }

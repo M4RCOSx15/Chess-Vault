@@ -4,6 +4,7 @@ import com.example.chessvault.dto.VideoRequestDTO;
 import com.example.chessvault.dto.VideoSearchResultDTO;
 import com.example.chessvault.model.VideoModel;
 import com.example.chessvault.repository.VideoRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +21,8 @@ public class VideoService {
         this.videoRepository      = videoRepository;
         this.youTubeClientService = youTubeClientService;
     }
-
-    public String SalvarVideo(VideoRequestDTO dto) {
+    @CacheEvict(value = "VideosCache", key = "#email")
+    public String SalvarVideo(VideoRequestDTO dto, String email) {
         VideoModel video = new VideoModel();
         video.setUrl(dto.getUrl());
         video.setTitulo(dto.getTitulo());
@@ -32,20 +33,20 @@ public class VideoService {
         videoRepository.save(video);
         return "Vídeo salvo com sucesso";
     }
-
-    public void DeletarVideo(Long id) {
+    @CacheEvict(value = "VideosCache", key = "#email")
+    public void DeletarVideo(Long id, String email) {
         videoRepository.deleteById(id);
     }
-    @Cacheable(value = "VideosCache", unless = "#result == null")
-    public List<VideoModel> RetornarTodosVideos() {
+    @Cacheable(value = "VideosCache", unless = "#result == null", key = "#email")
+    public List<VideoModel> RetornarTodosVideos(String email) {
         return videoRepository.findAll();
     }
 
     public List<VideoSearchResultDTO> buscarNoYouTube(String termo) {
         return youTubeClientService.buscarVideos(termo);
     }
-
-    public List<VideoSearchResultDTO> buscarESalvarDoYouTube(String termo) {
+    @CacheEvict(value = "VideosCache", key = "#email")
+    public List<VideoSearchResultDTO> buscarESalvarDoYouTube(String termo, String email) {
         List<VideoSearchResultDTO> resultados = youTubeClientService.buscarVideos(termo);
 
         resultados.forEach(r -> {

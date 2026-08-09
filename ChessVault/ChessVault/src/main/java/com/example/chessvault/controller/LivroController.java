@@ -25,12 +25,11 @@ public class LivroController {
         return ResponseEntity.ok(livroService.CriarLivro(livroModel, principal.getName()));
     }
     @DeleteMapping("/deletarlivro/{id}")
-    public ResponseEntity<HttpStatus> DeletarLivro(@PathVariable Long id){
-        livroService.DeletarLivro(id);
+    public ResponseEntity<HttpStatus> DeletarLivro(@PathVariable Long id,Principal principal){
+        livroService.DeletarLivro(id, principal.getName());
         return ResponseEntity.ok(HttpStatus.OK);
     }
     @GetMapping("/buscartodoslivros")
-    @Cacheable("retornartodoslivros")
     public List<LivroModel> RetornarAll(Principal principal){
         return livroService.RetornarTodosLivros(principal.getName());
     }

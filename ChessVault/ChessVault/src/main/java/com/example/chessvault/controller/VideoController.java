@@ -8,6 +8,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -21,17 +22,16 @@ public class VideoController {
         this.videoService = videoService;
     }
     @PostMapping("/salvarvideo")
-    public String SalvarVideo(@RequestBody VideoRequestDTO videoRequestDTO){
-       return videoService.SalvarVideo(videoRequestDTO);
+    public String SalvarVideo(@RequestBody VideoRequestDTO videoRequestDTO, Principal principal){
+       return videoService.SalvarVideo(videoRequestDTO,principal.getName());
     }
     @DeleteMapping("/deletarvideo/{id}")
-    public void DeletarVideo(@PathVariable Long id){
-        videoService.DeletarVideo(id);
+    public void DeletarVideo(@PathVariable Long id, Principal principal){
+        videoService.DeletarVideo(id, principal.getName());
     }
     @GetMapping("/buscartodosvideos")
-    @Cacheable("retornartodosvideos")
-    public List<VideoModel> RetornatTodosVideos(){
-        return videoService.RetornarTodosVideos();
+    public List<VideoModel> RetornatTodosVideos(Principal principal){
+        return videoService.RetornarTodosVideos(principal.getName());
     }
 
     /**
@@ -63,13 +63,14 @@ public class VideoController {
      */
     @PostMapping("/buscaresalvar")
     public ResponseEntity<List<VideoSearchResultDTO>> BuscarESalvar(
-            @RequestParam String termo) {
+            @RequestParam String termo,
+            Principal principal) {
 
         if (termo == null || termo.isBlank()) {
             return ResponseEntity.badRequest().build();
         }
 
-        List<VideoSearchResultDTO> resultados = videoService.buscarESalvarDoYouTube(termo);
+        List<VideoSearchResultDTO> resultados = videoService.buscarESalvarDoYouTube(termo, principal.getName());
         return ResponseEntity.ok(resultados);
     }
 }

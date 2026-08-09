@@ -3,6 +3,8 @@ package com.example.chessvault.service;
 import com.example.chessvault.dto.PuzzleDTO;
 import com.example.chessvault.model.PuzzleModel;
 import com.example.chessvault.repository.PuzzleRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
@@ -23,7 +25,8 @@ public class PuzzleService {
     }
 
     @Transactional
-    public PuzzleModel buscarESalvarPuzzleDoDia() {
+    @Cacheable(value = "PuzzleCache", key = "#email")
+    public PuzzleModel buscarESalvarPuzzleDoDia(String email) {
         // 1. Faz a requisição para a API externa
         PuzzleDTO dto = restClient.get()
                 .retrieve()
@@ -49,7 +52,8 @@ public class PuzzleService {
     }
 
     @Transactional
-    public PuzzleModel buscarESalvarPuzzleAleatorio() {
+    @CacheEvict(value = "PuzzleCache", key = "#email")
+    public PuzzleModel buscarESalvarPuzzleAleatorio(String email) {
         PuzzleDTO dto = restClient.get()
                 .uri("/random")
                 .retrieve()

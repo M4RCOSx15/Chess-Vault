@@ -5,6 +5,8 @@ import com.example.chessvault.model.LivroModel;
 import com.example.chessvault.model.UserModel;
 import com.example.chessvault.repository.LivroRepository;
 import com.example.chessvault.repository.UserRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +22,7 @@ public class LivroService {
     {this.livroRepository=livroRepository;
     this.userRepository = userRepository;
     }
-
+    @CacheEvict(value = "LivroCache", key = "#email")
     public String CriarLivro(LivroModel livro, String email){
         LivroModel livroAdd = new LivroModel();
         livroAdd.setNome(livro.getNome());
@@ -32,13 +34,13 @@ public class LivroService {
         livroRepository.save(livroAdd);
         return "Livro adicionado com sucesso";
     }
-
-    public void DeletarLivro(Long id){
+    @CacheEvict(value = "LivroCache",key = "#email")
+    public void DeletarLivro(Long id, String email){
         livroRepository.deleteById(id);
-    }
-    @Cacheable(value = "LivroCache", unless = "#result == null")
-    public List<LivroModel> RetornarTodosLivros(String email){
 
+    }
+    @Cacheable(value = "LivroCache",key = "#email", unless = "#result == null")
+    public List<LivroModel> RetornarTodosLivros(String email){
         return livroRepository.findByUsuario_Email(email);
     }
 }

@@ -26,7 +26,7 @@ public class YouTubeClientService {
     @Value("${youtube.api.base-url}")
     private String baseUrl;
 
-    @Value("${youtube.api.max-results:15}")
+    @Value("${youtube.api.max-results:20}")
     private int maxResults;
 
     private final RestClient restClient;

@@ -8,6 +8,8 @@ import com.example.chessvault.repository.JogadorRepository;
 import com.example.chessvault.repository.PartidasRepository;
 import com.example.chessvault.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,7 @@ public class JogadorService {
     }
 
     @Transactional
+    @CacheEvict(value = "JogadorCache", key = "#email")
     public String CriarJogador(JogadorModel jogadorModel, String email) {
 
 
@@ -64,7 +67,8 @@ public class JogadorService {
      * o jogador não tinha partidas vinculadas.
      */
     @Transactional
-    public void DeletarJogador(Long jogadorId) {
+    @CacheEvict(value = "JogadorCache", key = "#email")
+    public void DeletarJogador(Long jogadorId, String email) {
 
         JogadorModel jogador = jogadorRepository.findById(jogadorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Jogador não encontrado"));
@@ -80,8 +84,8 @@ public class JogadorService {
 
         jogadorRepository.deleteById(jogadorId);
     }
-
-    public ResponseEntity<JogadorModel> AtualizarJogador(Long id, JogadorModel jogadorModel) {
+    @CachePut(value = "JogadorCache", key = "#email")
+    public ResponseEntity<JogadorModel> AtualizarJogador(Long id, JogadorModel jogadorModel,String email) {
         JogadorModel jogadorAntigo = jogadorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Jogador não encontrado"));
         jogadorAntigo.setNome(jogadorModel.getNome());
@@ -91,7 +95,7 @@ public class JogadorService {
         jogadorAntigo.setImagemJogador(jogadorModel.getImagemJogador());
         return ResponseEntity.ok(jogadorAntigo);
     }
-    @Cacheable(value = "JogadorCache", unless = "#result == null")
+    @Cacheable(value = "JogadorCache", unless = "#result == null", key = "#email")
     public List<JogadorModel> RetornarTodosJogadores(String email) {
         return jogadorRepository.findByUsuario_Email(email);
     }

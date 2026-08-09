@@ -7,6 +7,7 @@ import com.example.chessvault.model.UserModel;
 import com.example.chessvault.repository.JogadorRepository;
 import com.example.chessvault.repository.PartidasRepository;
 import com.example.chessvault.repository.UserRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,7 @@ public class PartidasService {
         this.userRepository = userRepository;
         this.jogadorRepository = jogadorRepository;
     }
-
+    @CacheEvict(value = "PartidasCache", key = "#email")
     public String CriarPartida(PartidasModel partidasChess, String email){
         PartidasModel partidasModel = new PartidasModel();
         partidasModel.setNome(partidasChess.getNome());
@@ -53,7 +54,7 @@ public class PartidasService {
         partidasRepository.save(partidasModel);
         return "Partida salva com sucesso";
     }
-
+    @CacheEvict(value = "PartidasCache", key = "#email")
     private void extrairEVincularJogadoresPorNome(PartidasModel partidasModel, String email){
         if (partidasModel.getJogador1() != null && partidasModel.getJogador2() != null) return;
 
@@ -75,7 +76,7 @@ public class PartidasService {
         }
     }
 
-
+    @CacheEvict(value = "PartidasCache", key = "#email")
     public PartidasModel VincularJogador(Long partidaId, Long jogadorId){
         PartidasModel partida = partidasRepository.findById(partidaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Partida não encontrada"));
@@ -91,7 +92,7 @@ public class PartidasService {
 
         return partidasRepository.save(partida);
     }
-
+    @CacheEvict(value = "PartidasCache", key = "#email")
     // Desvincula um jogador específico da partida (limpa o slot em que ele estiver).
     public PartidasModel DesvincularJogador(Long partidaId, Long jogadorId){
         PartidasModel partida = partidasRepository.findById(partidaId)
@@ -135,15 +136,16 @@ public class PartidasService {
         PartidasModel partida = partidasRepository.findByNome(nomeDb).orElseThrow(() -> new ResourceNotFoundException("Partida não encontrada"));
         return partida;
     }
-    public List<PartidasModel> BuscarPartidasDoJogador(Long jogadorId){
+    @CacheEvict(value = "PartidasCache", key = "#email")
+    public List<PartidasModel> BuscarPartidasDoJogador(Long jogadorId,String email){
         return partidasRepository.findByJogador1_IdOrJogador2_Id(jogadorId, jogadorId);
     }
     @Cacheable(value = "PartidasCache", unless = "#result == null")
     public List<PartidasModel> RetornarTodasPartidas(String email){
         return partidasRepository.findByUsuario_Email(email);
     }
-
-    public void DeletarPartida(Long id){
+    @CacheEvict(value = "PartidasCache", key = "#email")
+    public void DeletarPartida(Long id, String email){
         partidasRepository.deleteById(id);
     }
 
