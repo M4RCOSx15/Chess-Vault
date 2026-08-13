@@ -78,12 +78,6 @@ function renderGameCardHTML(p) {
 async function loadGamesList() {
   const container = document.getElementById('games-list');
   const statEl = document.getElementById('stat-total-games');
-
-  // IMPORTANTE: limpar a tela ANTES do await, não depois. Sem isso,
-  // o HTML do usuário anterior (ou da seção anterior) continua visível
-  // durante toda a espera da requisição — e se o backend demorar
-  // (ex: "cold start" do Render acordando de hibernação), esse dado
-  // antigo/errado fica na tela por vários segundos.
   container.innerHTML = `<p style="color: var(--ink-muted); font-size: 13px;">Carregando partidas...</p>`;
   if (statEl) statEl.textContent = '—';
 
@@ -170,10 +164,6 @@ function closeNewGameModal() {
  * o padrão real que você encontrou, e prefere AVISAR demais a aceitar
  * dado ruim silenciosamente.
  */
-function pgnPareceColado(pgn) {
-  const padraoColado = /[1-8](?=[a-hKQRBNO])/;
-  return padraoColado.test(pgn);
-}
 
 async function handleNewGameSubmit(nome, pgn) {
   if (!nome.trim()) {
@@ -184,18 +174,12 @@ async function handleNewGameSubmit(nome, pgn) {
     showToast('Cole o PGN da partida.', 'error');
     return;
   }
-  if (pgnPareceColado(pgn)) {
-    showToast(
-      'O PGN parece estar sem espaços entre os lances (ex: "e5Nf3" em vez de "e5 Nf3"). Adicione os espaços e tente novamente.',
-      'error'
-    );
-    return;
-  }
+  // Sem checagem de formato aqui — só campos vazios (isso é UX, não
+  // validação de xadrez). O PGN em si é validado pelo backend, que
+  // devolve 400 + mensagem explicando o que está errado (lance ilegal,
+  // notação quebrada, etc.) se o PgnInvalidoException for lançado.
 
   try {
-    // ATENÇÃO: o endpoint recebe o PartidasModel direto (sem DTO).
-    // Por causa do getter getPGN() (duas letras maiúsculas seguidas),
-    // o Jackson espera a chave "PGN" maiúscula no JSON, não "pgn".
     await api.post(CONFIG.ENDPOINTS.PARTIDAS.CRIAR, { nome: nome, PGN: pgn });
     showToast('Partida salva com sucesso!', 'success');
     closeNewGameModal();
