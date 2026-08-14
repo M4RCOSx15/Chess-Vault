@@ -50,8 +50,3 @@ Jogo: CRUD completo para jogos de xadrez, importação de PGN, paginação, filt
 Usuário: Gerenciamento de perfil, controle de acesso baseado em funções
 Livro/Vídeo: CRUD simples para gerenciamento de conteúdo
 Painel: Endpoints de estatísticas agregadas
-
-
-
-7. Controlador → Resposta HTTP (saída formatada)
-
