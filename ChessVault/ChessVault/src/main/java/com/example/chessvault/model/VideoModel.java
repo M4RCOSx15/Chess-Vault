@@ -20,6 +20,9 @@ public class VideoModel {
     @Column(name = "id_video")
     private String idVideo;
 
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private UserModel usuario;
 
     public VideoModel() {}
 
@@ -75,5 +78,13 @@ public class VideoModel {
 
     public void setIdVideo(String idVideo) {
         this.idVideo = idVideo;
+    }
+
+    public UserModel getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(UserModel usuario) {
+        this.usuario = usuario;
     }
 }
