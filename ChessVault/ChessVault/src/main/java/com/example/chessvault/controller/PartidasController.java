@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/partidas")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "https://chessvaultfrontend.chessvault.workers.dev/")
 public class PartidasController {
     private final PartidasService partidasService;
 

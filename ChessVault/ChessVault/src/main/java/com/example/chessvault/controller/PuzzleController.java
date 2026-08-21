@@ -9,7 +9,7 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/puzzles")
-@CrossOrigin(origins = {"http://127.0.0.1:5500", "http://localhost:5500"})
+@CrossOrigin(origins = {"https://chessvaultfrontend.chessvault.workers.dev/"})
 public class PuzzleController {
 
     private final PuzzleService puzzleService;
