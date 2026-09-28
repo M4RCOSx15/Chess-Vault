@@ -11,4 +11,4 @@ jobs:
     steps:
       - name: Ping backend
         run: |
-          curl -sS -o /dev/null -w "HTTP %{http_code}\n" --max-time 60 https://chess-vault.onrender.com/auth/health
+          curl -sS -o /dev/null -w "HTTP %{http_code}\n" --max-time 120 https://chess-vault.onrender.com/auth/health
