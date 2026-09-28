@@ -26,7 +26,10 @@ public class AuthController {
         authService.register(registerRequest);
         return ResponseEntity.ok("Usuario Criado");
     }
-
+    @GetMapping("/health")
+    public ResponseEntity<String> KeepAlive(){
+        return ResponseEntity.ok("OK");
+    }
     @PostMapping("/login")
     public AuthResponse LoginUser(@RequestBody LoginRequest loginRequest){
 
